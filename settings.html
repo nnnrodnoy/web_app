@@ -1,84 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Настройка доклада</title>
+    <title>Настройки доклада</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* ========================================================= */
-        /* UI/UX УЛУЧШЕНИЯ И АДАПТАЦИЯ К ТЕМАМ TELEGRAM */
+        /* UI/UX ИЗМЕНЕНИЯ: МЕНЮ, ПРОЗРАЧНОСТЬ И ЧЕРНЫЙ ТЕКСТ */
         /* ========================================================= */
         :root {
             /* Дефолтные значения (используются для расчета RGB) */
             --tg-theme-bg-color: #f0f0f0;
             --tg-theme-secondary-bg-color: #ffffff;
-            --tg-theme-text-color: #000000; 
-            --tg-theme-hint-color: #aaaaaa;
             --tg-theme-link-color: #007bff;
-            /* Переменная для RGB-компонентов, устанавливается через JS */
-            --tg-theme-secondary-bg-color-rgb: 255, 255, 255;
+            --tg-theme-secondary-bg-color-rgb: 255, 255, 255; /* Дефолт */
         }
         
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
             padding: 0;
             margin: 0;
-            
-            /* --- ФОН --- */
             background-color: var(--tg-theme-bg-color);
             background-image: url('background.jpg'); /* Убедитесь, что файл называется background.jpg */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            /* --- ЦЕНТРИРОВАНИЕ КОНТЕНТА --- */
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            width: 100vw;
         }
 
-        /* --- КОНТЕЙНЕР (Основной интерфейс) --- */
         .container {
             max-width: 600px;
-            margin: 15px; 
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.4); 
-            
-            /* Текст всегда черный */
-            color: #000000 !important; 
-            
-            /* Повышенная прозрачность контейнера (0.65) */
-            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.65); 
-            backdrop-filter: blur(8px); /* Усиленное размытие для лучшего эффекта */
-            
+            margin: 0 auto; /* Центрируем по горизонтали */
+            padding: 20px 15px; /* Отступы сверху/снизу и по бокам */
             box-sizing: border-box;
         }
-        
-        /* --- ЭЛЕМЕНТЫ ВНУТРИ КОНТЕЙНЕРА --- */
-        h1, h2 {
-            color: #000000; /* Заголовки черные */
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            border-bottom: 2px solid var(--tg-theme-link-color); 
-            padding-bottom: 5px;
+
+        /* --- БЛОК ТЕКУЩИХ НАСТРОЕК --- */
+        .current-settings-box {
+            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.75);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #000000;
         }
-        h2 {
+        .current-settings-box h1 {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
             font-size: 1.2em;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            padding-left: 5px;
-            border-left: 4px solid var(--tg-theme-link-color);
-            border-bottom: none; 
         }
+
+        /* --- КАРТОЧКА МЕНЮ (Accordion Item) --- */
+        .menu-item {
+            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.65); /* Прозрачность 65% */
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: box-shadow 0.2s;
+        }
+        .menu-item:hover {
+             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .menu-header {
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #000000; /* Чёрный текст */
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .menu-content {
+            padding: 0 20px 15px 20px;
+            overflow: hidden;
+            max-height: 0; /* Скрыто по умолчанию */
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        }
+        
+        .menu-item.active .menu-content {
+            max-height: 500px; /* Достаточно для раскрытия */
+            padding-top: 15px;
+        }
+
+        /* --- ЭЛЕМЕНТЫ ФОРМЫ --- */
         label {
             display: block;
             margin-top: 15px;
             font-weight: 500;
             font-size: 0.9em;
-            color: #333333; /* Темно-серый для подсказок */
+            color: #333333;
         }
         input[type="text"], textarea, select {
             width: 100%;
@@ -87,10 +104,8 @@
             border-radius: 8px;
             border: 1px solid rgba(0,0,0,0.3); 
             box-sizing: border-box;
-            
-            /* Повышенная прозрачность полей ввода (0.5) */
-            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.5); 
-            color: #000000; /* Текст в полях ввода черный */
+            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.5); /* Прозрачность 50% */
+            color: #000000; 
             font-size: 1em;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -98,7 +113,7 @@
             border-color: var(--tg-theme-link-color);
             box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.4);
             outline: none;
-            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.8); /* Меньше прозрачности при фокусе */
+            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.8); 
         }
         textarea {
             resize: vertical;
@@ -127,72 +142,138 @@
 </head>
 <body>
     
-
 <div class="container">
-        <h1>Параметры нового доклада</h1>
-        <form id="reportForm">
-            <h2>Тема и требования</h2>
-            <label for="topic">Тема доклада (обязательно):</label>
-            <input type="text" id="topic" name="topic" required>
+    <form id="reportForm">
+        
+        <div class="menu-item active">
+            <div class="menu-header" onclick="toggleMenu(this)">
+                <span>📝 Тема и общие требования</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-content">
+                <label for="topic">Тема доклада (обязательно):</label>
+                <input type="text" id="topic" name="topic" required>
 
-            <label for="description">Требования / Описание (необязательно):</label>
-            <textarea id="description" name="description" placeholder="Например: 'Объем 5 страниц, акцент на исторических фактах'."></textarea>
-            
-            <label for="language">Язык генерации:</label>
-            <select id="language" name="language">
-                <option value="Русский">Русский 🇷🇺 (По умолчанию)</option>
-                <option value="English">English 🇬🇧</option>
-            </select>
+                <label for="description">Требования / Описание (необязательно):</label>
+                <textarea id="description" name="description" placeholder="Например: 'Объем 5 страниц, акцент на исторических фактах'."></textarea>
+                
+                <label for="language">Язык генерации:</label>
+                <select id="language" name="language">
+                    <option value="Русский">Русский 🇷🇺 (По умолчанию)</option>
+                    <option value="English">English 🇬🇧</option>
+                </select>
+            </div>
+        </div>
 
-            <h2>Настройки форматирования (текущие: <span id="current-settings-summary">Не заданы</span>)</h2>
-            <div class="setting-group">
-                <div>
-                    <label for="font">Шрифт:</label>
-                    <select id="font" name="font">
-                        <option value="Times New Roman">Times New Roman</option>
-                        <option value="Arial">Arial</option>
-                        <option value="Calibri">Calibri</option>
-                        <option value="Verdana">Verdana</option>
-                    </select>
+        <div class="menu-item">
+            <div class="menu-header" onclick="toggleMenu(this)">
+                <span>✍️ Форматирование основного текста</span>
+                <span class="arrow">▶</span>
+            </div>
+            <div class="menu-content">
+                <div class="setting-group">
+                    <div>
+                        <label for="font">Шрифт:</label>
+                        <select id="font" name="font">
+                            <option value="Times New Roman">Times New Roman (По умолч.)</option>
+                            <option value="Arial">Arial</option>
+                            <option value="Calibri">Calibri</option>
+                            <option value="Verdana">Verdana</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="size">Размер текста (pt):</label>
+                        <select id="size" name="size">
+                            <option value="14pt">14 pt (По умолч.)</option>
+                            <option value="12pt">12 pt</option>
+                            <option value="16pt">16 pt</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label for="size">Размер основного текста (pt):</label>
-                    <select id="size" name="size">
-                        <option value="14pt">14 pt</option>
-                        <option value="12pt">12 pt</option>
-                        <option value="16pt">16 pt</option>
-                    </select>
+
+                <div class="setting-group">
+                    <div>
+                        <label for="spacing">Интервал:</label>
+                        <select id="spacing" name="spacing">
+                            <option value="1.15">1.15 (По умолч.)</option>
+                            <option value="1.0">Одинарный (1.0)</option>
+                            <option value="1.5">Полуторный (1.5)</option>
+                            <option value="2.0">Двойной (2.0)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="color">Цвет текста (HEX):</label>
+                        <select id="color" name="color">
+                            <option value="0x000000">Черный (0x000000)</option>
+                            <option value="0x0000FF">Синий (0x0000FF)</option>
+                            <option value="0xFF0000">Красный (0x00FF00)</option>
+                            <option value="0x008000">Зеленый (0x008000)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-
-            <div class="setting-group">
-                <div>
-                    <label for="spacing">Интервал:</label>
-                    <select id="spacing" name="spacing">
-                        <option value="1.15">1.15 (По умолчанию)</option>
-                        <option value="1.0">Одинарный (1.0)</option>
-                        <option value="1.5">Полуторный (1.5)</option>
-                        <option value="2.0">Двойной (2.0)</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="color">Цвет текста (HEX):</label>
-                    <select id="color" name="color">
-                        <option value="0x000000">Черный (0x000000)</option>
-                        <option value="0x0000FF">Синий (0x0000FF)</option>
-                        <option value="0xFF0000">Красный (0xFF0000)</option>
-                        <option value="0x008000">Зеленый (0x008000)</option>
-                    </select>
+        </div>
+        
+        <div class="menu-item">
+            <div class="menu-header" onclick="toggleMenu(this)">
+                <span>📑 Форматирование заголовков</span>
+                <span class="arrow">▶</span>
+            </div>
+            <div class="menu-content">
+                <div class="setting-group">
+                    <div>
+                        <label for="h1_align">Выравнивание H1:</label>
+                        <select id="h1_align" name="h1_align">
+                            <option value="LEFT">По левому краю (По умолч.)</option>
+                            <option value="CENTER">По центру</option>
+                            <option value="JUSTIFY">По ширине</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="h2_align">Выравнивание H2:</label>
+                        <select id="h2_align" name="h2_align">
+                            <option value="LEFT">По левому краю (По умолч.)</option>
+                            <option value="CENTER">По центру</option>
+                            <option value="JUSTIFY">По ширине</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-        </form>
+        </div>
+
+        <div class="menu-item">
+            <div class="menu-header" onclick="toggleMenu(this)">
+                <span>📦 Структура доклада</span>
+                <span class="arrow">▶</span>
+            </div>
+            <div class="menu-content">
+                <label for="has_title_page">Титульный лист:</label>
+                <select id="has_title_page" name="has_title_page">
+                    <option value="true">С титульным листом (По умолч.)</option>
+                    <option value="false">Без титульного листа</option>
+                </select>
+
+                <label for="has_toc">Оглавление:</label>
+                <select id="has_toc" name="has_toc">
+                    <option value="false">Не добавлять (По умолч.)</option>
+                    <option value="true">Добавить место для оглавления</option>
+                </select>
+            </div>
+        </div>
+
+    </form>
+    
+    <div class="current-settings-box">
+        <h1>Текущие настройки форматирования:</h1>
+        <p id="current-settings-summary">Не заданы</p>
     </div>
+</div>
 
     <script>
         const WebApp = window.Telegram.WebApp;
 
         WebApp.ready();
-        WebApp.setHeaderColor('#00000000'); // Прозрачный заголовок
+        WebApp.setHeaderColor('#00000000'); 
 
         function getRgbFromHex(hex) {
             if (!hex || hex.length !== 7 || hex[0] !== '#') return [255, 255, 255]; 
@@ -206,12 +287,27 @@
             }
         }
 
+        // --- Функция для переключения меню (аккордеон) ---
+        function toggleMenu(header) {
+            const item = header.closest('.menu-item');
+            const content = item.querySelector('.menu-content');
+            const arrow = item.querySelector('.arrow');
+            
+            const isActive = item.classList.toggle('active');
+
+            if (isActive) {
+                arrow.textContent = '▼';
+            } else {
+                arrow.textContent = '▶';
+            }
+        }
+        
+        // --- Установка настроек из URL ---
         function loadSettingsFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
-            const settingsKeys = ['font', 'size', 'spacing', 'color'];
+            const settingsKeys = ['font', 'size', 'spacing', 'color', 'h1_align', 'h2_align', 'has_title_page', 'has_toc'];
             let summaryText = "";
 
-            // --- Установка настроек из URL ---
             settingsKeys.forEach(key => {
                 if (urlParams.has(key)) {
                     const value = urlParams.get(key);
@@ -223,8 +319,15 @@
                             if (element.options[i].value === value) {
                                 element.value = value;
                                 found = true;
-                                const optionText = element.options[i].text.replace(/\s\(.*\)/, ''); 
-                                summaryText += `${key.charAt(0).toUpperCase()}: ${optionText}, `;
+                                
+                                // Добавляем в сводку только ключевые настройки форматирования текста
+                                if (['font', 'size', 'spacing'].includes(key)) {
+                                    const optionText = element.options[i].text.replace(/\s\(.*\)/, '').replace(' (По умолч.)', ''); 
+                                    summaryText += `${key.charAt(0).toUpperCase()}: ${optionText}, `;
+                                } else if (key === 'color') {
+                                    const optionText = element.options[i].text.split('(')[0].trim();
+                                    summaryText += `Цвет: ${optionText}, `;
+                                }
                                 break;
                             }
                         }
@@ -233,7 +336,11 @@
             });
             
             const summaryElement = document.getElementById('current-settings-summary');
-            summaryElement.textContent = summaryText ? summaryText.slice(0, -2) : "Times New Roman, 14pt, 1.15";
+            if (summaryText) {
+                summaryElement.textContent = summaryText.slice(0, -2); 
+            } else {
+                summaryElement.textContent = "Ш: Times New Roman, Р: 14 pt, И: 1.15, Цвет: Черный"; 
+            }
 
             // --- Установка главной кнопки ---
             WebApp.setMainButton({
@@ -246,9 +353,12 @@
             const themeParams = WebApp.themeParams;
             if (themeParams && themeParams.secondary_bg_color) {
                 const secondaryBgColor = themeParams.secondary_bg_color;
-                const [r, g, b] = getRgbFromHex(secondaryBgColor);
-                // Устанавливаем переменную для использования в rgba()
+                // Telegram HEX включает #, но getRgbFromHex это обрабатывает
+                const [r, g, b] = getRgbFromHex(secondaryBgColor); 
                 document.documentElement.style.setProperty('--tg-theme-secondary-bg-color-rgb', `${r},${g},${b}`);
+            } else {
+                // Если тема не пришла, используем дефолтные RGB (белый)
+                document.documentElement.style.setProperty('--tg-theme-secondary-bg-color-rgb', `255, 255, 255`);
             }
         }
         
