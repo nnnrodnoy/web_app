@@ -9,87 +9,96 @@
         /* UI/UX УЛУЧШЕНИЯ И АДАПТАЦИЯ К ТЕМАМ TELEGRAM */
         /* ========================================================= */
         :root {
+            /* Дефолтные значения (используются для расчета RGB) */
             --tg-theme-bg-color: #f0f0f0;
             --tg-theme-secondary-bg-color: #ffffff;
-            --tg-theme-text-color: #000000;
+            --tg-theme-text-color: #000000; 
             --tg-theme-hint-color: #aaaaaa;
             --tg-theme-link-color: #007bff;
+            /* Переменная для RGB-компонентов, устанавливается через JS */
+            --tg-theme-secondary-bg-color-rgb: 255, 255, 255;
         }
         
         body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            padding: 0; /* Убираем стандартный padding, чтобы фон занимал всю область */
-            margin: 0;  /* Убираем стандартный margin */
+            padding: 0;
+            margin: 0;
+            
+            /* --- ФОН --- */
             background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            transition: background-color 0.3s;
-            
-            /* --- НОВОЕ: Фоновое изображение --- */
-            background-image: url('background.jpg'); /* Укажите путь к вашему изображению */
-            background-size: cover; /* Растянуть изображение на весь фон */
-            background-position: center; /* Центрировать изображение */
-            background-repeat: no-repeat; /* Не повторять изображение */
-            background-attachment: fixed; /* Закрепить фон при прокрутке */
-            /* --- КОНЕЦ НОВОГО --- */
-            
-            display: flex; /* Для центрирования контента */
+            background-image: url('background.jpg'); /* Убедитесь, что файл называется background.jpg */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            /* --- ЦЕНТРИРОВАНИЕ КОНТЕНТА --- */
+            display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh; /* Минимальная высота, чтобы фон был на весь экран */
+            min-height: 100vh;
+            width: 100vw;
         }
+
+        /* --- КОНТЕЙНЕР (Основной интерфейс) --- */
         .container {
             max-width: 600px;
-            margin: 15px; /* Немного отступов по краям */
-            background: var(--tg-theme-secondary-bg-color);
+            margin: 15px; 
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.3); /* Более заметная тень для контраста */
+            box-shadow: 0 6px 16px rgba(0,0,0,0.4); 
             
-            /* --- НОВОЕ: Полупрозрачность --- */
-            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb, 255,255,255), 0.85); /* 85% непрозрачности */
-            backdrop-filter: blur(5px); /* Легкое размытие фона за контейнером (современные браузеры) */
-            /* --- КОНЕЦ НОВОГО --- */
+            /* Текст всегда черный */
+            color: #000000 !important; 
             
-            box-sizing: border-box; /* Учитывать padding в ширине */
+            /* Повышенная прозрачность контейнера (0.65) */
+            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.65); 
+            backdrop-filter: blur(8px); /* Усиленное размытие для лучшего эффекта */
+            
+            box-sizing: border-box;
         }
-        h1 {
-            color: var(--tg-theme-text-color);
+        
+        /* --- ЭЛЕМЕНТЫ ВНУТРИ КОНТЕЙНЕРА --- */
+        h1, h2 {
+            color: #000000; /* Заголовки черные */
             font-size: 1.5em;
             margin-bottom: 10px;
-            border-bottom: 2px solid var(--tg-theme-link-color);
+            border-bottom: 2px solid var(--tg-theme-link-color); 
             padding-bottom: 5px;
         }
         h2 {
-            color: var(--tg-theme-link-color);
             font-size: 1.2em;
             margin-top: 25px;
             margin-bottom: 15px;
             padding-left: 5px;
             border-left: 4px solid var(--tg-theme-link-color);
+            border-bottom: none; 
         }
         label {
             display: block;
             margin-top: 15px;
             font-weight: 500;
             font-size: 0.9em;
-            color: var(--tg-theme-hint-color);
+            color: #333333; /* Темно-серый для подсказок */
         }
         input[type="text"], textarea, select {
             width: 100%;
             padding: 12px;
             margin-top: 8px;
             border-radius: 8px;
-            border: 1px solid var(--tg-theme-hint-color);
+            border: 1px solid rgba(0,0,0,0.3); 
             box-sizing: border-box;
-            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb, 255,255,255), 0.7); /* Чуть более прозрачные поля */
-            color: var(--tg-theme-text-color);
+            
+            /* Повышенная прозрачность полей ввода (0.5) */
+            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.5); 
+            color: #000000; /* Текст в полях ввода черный */
             font-size: 1em;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         input:focus, textarea:focus, select:focus {
             border-color: var(--tg-theme-link-color);
-            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.4);
             outline: none;
+            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.8); /* Меньше прозрачности при фокусе */
         }
         textarea {
             resize: vertical;
@@ -117,7 +126,9 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    
+
+<div class="container">
         <h1>Параметры нового доклада</h1>
         <form id="reportForm">
             <h2>Тема и требования</h2>
@@ -181,27 +192,26 @@
         const WebApp = window.Telegram.WebApp;
 
         WebApp.ready();
-        // Устанавливаем цвет заголовка Web App на прозрачный, чтобы фон просвечивал
-        WebApp.setHeaderColor('#00000000'); // Прозрачный черный
+        WebApp.setHeaderColor('#00000000'); // Прозрачный заголовок
 
-        // Вспомогательная функция для получения RGB-компонентов из HEX-строки Telegram
         function getRgbFromHex(hex) {
-            if (!hex || hex.length !== 7) return [255, 255, 255]; // Дефолт белый
-            const r = parseInt(hex.substring(1, 3), 16);
-            const g = parseInt(hex.substring(3, 5), 16);
-            const b = parseInt(hex.substring(5, 7), 16);
-            return [r, g, b];
+            if (!hex || hex.length !== 7 || hex[0] !== '#') return [255, 255, 255]; 
+            try {
+                const r = parseInt(hex.substring(1, 3), 16);
+                const g = parseInt(hex.substring(3, 5), 16);
+                const b = parseInt(hex.substring(5, 7), 16);
+                return [r, g, b];
+            } catch (e) {
+                return [255, 255, 255];
+            }
         }
 
-        // =========================================================
-        // ФУНКЦИЯ: Чтение настроек из URL и применение их к форме
-        // =========================================================
         function loadSettingsFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
-            
             const settingsKeys = ['font', 'size', 'spacing', 'color'];
             let summaryText = "";
 
+            // --- Установка настроек из URL ---
             settingsKeys.forEach(key => {
                 if (urlParams.has(key)) {
                     const value = urlParams.get(key);
@@ -213,10 +223,8 @@
                             if (element.options[i].value === value) {
                                 element.value = value;
                                 found = true;
-                                
                                 const optionText = element.options[i].text.replace(/\s\(.*\)/, ''); 
                                 summaryText += `${key.charAt(0).toUpperCase()}: ${optionText}, `;
-                                
                                 break;
                             }
                         }
@@ -225,38 +233,25 @@
             });
             
             const summaryElement = document.getElementById('current-settings-summary');
-            if (summaryText) {
-                 summaryElement.textContent = summaryText.slice(0, -2); 
-            } else {
-                 summaryElement.textContent = "Times New Roman, 14pt, 1.15"; 
-            }
-            
+            summaryElement.textContent = summaryText ? summaryText.slice(0, -2) : "Times New Roman, 14pt, 1.15";
 
-            // Устанавливаем главную кнопку Telegram
+            // --- Установка главной кнопки ---
             WebApp.setMainButton({
                 text: 'СГЕНЕРИРОВАТЬ ДОКЛАД',
                 isVisible: true
             });
             WebApp.MainButton.onClick(sendSettings);
 
-            // Установка цветов для полупрозрачности
+            // --- Установка CSS-переменных для прозрачности ---
             const themeParams = WebApp.themeParams;
-            if (themeParams) {
-                const bgColor = themeParams.bg_color || '#f0f0f0';
-                const secondaryBgColor = themeParams.secondary_bg_color || '#ffffff';
-                
+            if (themeParams && themeParams.secondary_bg_color) {
+                const secondaryBgColor = themeParams.secondary_bg_color;
                 const [r, g, b] = getRgbFromHex(secondaryBgColor);
+                // Устанавливаем переменную для использования в rgba()
                 document.documentElement.style.setProperty('--tg-theme-secondary-bg-color-rgb', `${r},${g},${b}`);
-
-                // Дополнительно, чтобы inputы были более прозрачными, чем основной контейнер
-                const [r_bg, g_bg, b_bg] = getRgbFromHex(bgColor);
-                document.documentElement.style.setProperty('--tg-theme-bg-color-rgb', `${r_bg},${g_bg},${b_bg}`);
             }
         }
         
-        // =========================================================
-        // ФУНКЦИЯ: Отправка данных боту 
-        // =========================================================
         function sendSettings() {
             const form = document.getElementById('reportForm');
             const topic = form.elements['topic'].value.trim();
