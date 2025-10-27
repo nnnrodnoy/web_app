@@ -493,7 +493,7 @@
         // Обработка ввода цвета вручную
         hexInput.addEventListener('input', function() {
             const val = this.value.toUpperCase();
-            // Простая проверка формата #RRGGBB или #RGB
+            // Проверка формата #RRGGBB или #RGB
             if (/^#([0-9A-F]{3}){1,2}$/i.test(val)) {
                 colorPicker.value = val;
             }
@@ -509,7 +509,7 @@
             const max = parseInt(element.max);
 
             if (isNaN(value) || value < min || value > max) {
-                WebApp.showAlert(`Пожалуйста, введите корректное целое число для "${element.previousElementSibling.textContent.trim()}" (от ${min} до ${max}).`);
+                WebApp.showAlert(`Пожалуйста, введите корректное целое число для "${element.previousElementSibling.textContent.trim()}" (от ${element.min} до ${element.max}).`);
                 element.focus();
                 return false;
             }
@@ -592,12 +592,13 @@
             }, 500);
         }
         
-        // ** Заполнение полей начальными значениями из URL **
+        // ** Заполнение полей начальными значениями из URL (КЛЮЧЕВОЙ БЛОК) **
         if (WebApp.initDataUnsafe.query_id) {
             const urlParams = new URLSearchParams(window.location.search);
             
             for (const [key, value] of urlParams.entries()) {
                 const element = document.getElementById(key);
+                
                 if (element) {
                     const decodedValue = decodeURIComponent(value);
 
@@ -605,7 +606,6 @@
                         element.checked = decodedValue === 'true';
                     } 
                     else if (key === 'color') {
-                        // КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ ДЛЯ ЦВЕТА
                         // Обработка цвета: 0xRRGGBB -> #RRGGBB
                         if (decodedValue.startsWith('0x') && decodedValue.length >= 8) {
                             const hexColor = '#' + decodedValue.substring(2);
@@ -613,6 +613,7 @@
                             colorPicker.value = hexColor.toUpperCase();
                         }
                     }
+                    // Применяем декодированное значение ко всем остальным полям (включая SELECT)
                     else if (element.tagName === 'SELECT' || element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                         element.value = decodedValue; 
                     }
