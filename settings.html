@@ -11,6 +11,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            /* Используем переменные темы Telegram для адаптивного дизайна */
             background-color: var(--tg-theme-bg-color, #f4f4f5);
             color: var(--tg-theme-text-color, #1c1c1e);
             transition: background-color 0.3s, color 0.3s;
@@ -70,14 +71,14 @@
             color: var(--tg-theme-text-color, #000);
         }
 
-        /* Стиль для кнопки "Создать доклад" */
+        /* Стиль для кнопки "Создать доклад" - ГЛАВНЫЙ ЭЛЕМЕНТ */
         #createReportBtn {
             width: 100%;
             padding: 15px;
             margin-top: 30px;
             border: none;
             border-radius: 12px;
-            background-color: var(--tg-theme-button-color, #007bff);
+            background-color: var(--tg-theme-button-color, #28a745); /* Зеленый цвет по умолчанию */
             color: var(--tg-theme-button-text-color, #fff);
             font-size: 1.1em;
             font-weight: 700;
@@ -217,7 +218,7 @@
         WebApp.ready();
         
         // Устанавливаем цвет кнопки, чтобы соответствовал теме Telegram
-        document.getElementById('createReportBtn').style.backgroundColor = WebApp.themeParams.button_color || '#007bff';
+        document.getElementById('createReportBtn').style.backgroundColor = WebApp.themeParams.button_color || '#28a745';
         document.getElementById('createReportBtn').style.color = WebApp.themeParams.button_text_color || '#fff';
         
         // Функция для сбора и отправки всех данных
@@ -242,7 +243,8 @@
                 font: document.getElementById('font').value,
                 text_size: document.getElementById('text_size').value,
                 spacing: document.getElementById('spacing').value,
-                color: '0x000000', // Цвет пока фиксированный черный
+                // Используем HEX-формат для цвета
+                color: '0x000000', 
                 text_align: document.getElementById('text_align').value,
                 
                 // Форматирование заголовков
@@ -267,7 +269,7 @@
             // 2. Формирование строки для отправки
             const dataArray = [];
             for (const key in settings) {
-                // Используем encodeURIComponent для безопасной передачи данных (особенно темы и описания)
+                // Используем encodeURIComponent для безопасной передачи данных
                 dataArray.push(`${key}=${encodeURIComponent(settings[key])}`);
             }
             const dataString = dataArray.join('&');
@@ -276,19 +278,20 @@
             WebApp.sendData(dataString);
         }
         
-        // Добавление слушателя для получения начальных настроек из URL
-        // (Этот код нужен, чтобы поля заполнялись настройками по умолчанию из main.py)
+        // Заполнение полей начальными значениями из URL (передается из main.py)
         if (WebApp.initDataUnsafe.query_id) {
             const urlParams = new URLSearchParams(window.location.search);
             
-            // Заполнение полей из параметров URL
             for (const [key, value] of urlParams.entries()) {
                 const element = document.getElementById(key);
                 if (element) {
+                    // Обработка чекбоксов
                     if (element.type === 'checkbox') {
                         element.checked = value === 'true';
-                    } else if (element.tagName === 'SELECT' || element.tagName === 'INPUT') {
-                        element.value = value;
+                    } 
+                    // Обработка остальных полей
+                    else if (element.tagName === 'SELECT' || element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.value = decodeURIComponent(value); // Декодируем для отображения в полях
                     }
                 }
             }
