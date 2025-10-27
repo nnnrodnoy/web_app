@@ -2,116 +2,652 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Настройки | Приложение</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Настройки доклада AI</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* Базовые стили */
+        :root {
+            /* Переменные для интеграции с темой Telegram */
+            --tg-bg-color: var(--tg-theme-bg-color, #ffffff);
+            --tg-secondary-bg-color: var(--tg-theme-secondary-bg-color, #f4f4f5);
+            --tg-text-color: var(--tg-theme-text-color, #1c1c1e);
+            --tg-hint-color: var(--tg-theme-hint-color, #8e8e93);
+            --tg-button-color: var(--tg-theme-button-color, #007bff);
+            --tg-button-text-color: var(--tg-theme-button-text-color, #ffffff);
+            --border-radius: 16px;
+            --section-spacing: 20px;
+            --element-spacing: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 10px 0;
+            background-color: transparent;
+            color: var(--tg-text-color);
+            transition: var(--transition);
+            overflow-y: auto;
+            line-height: 1.5;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #333;
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .setting-group {
-            margin-bottom: 20px;
-            padding: 15px;
-            border: 1px solid #eee;
-            border-radius: 4px;
-        }
-        .setting-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #555;
-        }
-        input[type="text"], input[type="email"], select {
-            width: 100%;
+
+        /* Контейнер формы */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
             padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box; /* Включает padding в общую ширину */
         }
-        button {
-            background-color: #5cb85c;
-            color: white;
-            padding: 10px 15px;
+
+        /* Заголовок */
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 0 10px;
+        }
+
+        .header-icon {
+            font-size: 1.8em;
+            margin-right: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h1 {
+            color: var(--tg-text-color);
+            font-size: 1.5em;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Секции */
+        .section {
+            margin-bottom: var(--section-spacing);
+            padding: 20px;
+            background-color: var(--tg-secondary-bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section:hover {
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            opacity: 0.7;
+        }
+
+        .section h2 {
+            display: flex;
+            align-items: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--tg-text-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .section-icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        /* Элементы формы */
+        .form-group {
+            margin-bottom: var(--element-spacing);
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--tg-hint-color);
+            transition: var(--transition);
+        }
+
+        input[type="text"], 
+        textarea, 
+        select, 
+        input[type="number"] {
+            width: 100%;
+            padding: 14px 16px;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
+            box-sizing: border-box;
+            background-color: var(--tg-bg-color);
+            color: var(--tg-text-color);
+            font-size: 1em;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        }
+
+        input[type="text"]:focus, 
+        textarea:focus, 
+        select:focus, 
+        input[type="number"]:focus {
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Группа выбора цвета */
+        .color-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-input-container input[type="text"] {
+            flex-grow: 1;
+        }
+
+        .color-input-container input[type="color"] {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            border-radius: 12px;
+            border: 2px solid var(--tg-hint-color);
             cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
+            transition: var(--transition);
         }
-        button:hover {
-            background-color: #4cae4c;
+
+        .color-input-container input[type="color"]:hover {
+            transform: scale(1.05);
         }
+
+        /* Чекбоксы */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+            padding: 8px 0;
+            transition: var(--transition);
+            border-radius: 8px;
+        }
+
+        .checkbox-group:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+            accent-color: var(--tg-button-color); 
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: normal;
+            color: var(--tg-text-color);
+            cursor: pointer;
+        }
+
+        /* Кнопка */
+        .create-button {
+            position: relative;
+            width: 100%;
+            padding: 18px;
+            margin-top: 30px;
+            border: none;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--tg-button-color), #5a67d8); 
+            color: var(--tg-button-text-color);
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+            overflow: hidden;
+        }
+
+        .create-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .create-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+        }
+
+        .create-button:hover::before {
+            left: 100%;
+        }
+
+        .create-button:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .create-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .button-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 480px) {
+            .form-container {
+                padding: 5px;
+            }
+            
+            .section {
+                padding: 16px;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .header-icon {
+                margin-right: 0;
+                margin-bottom: 8px;
+            }
+        }
+
+        /* Анимация появления */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.2s; }
+        .section:nth-child(3) { animation-delay: 0.3s; }
+        .section:nth-child(4) { animation-delay: 0.4s; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Настройки Аккаунта</h1>
+<div class="form-container">
+    <div class="header">
+        <div class="header-icon">✨</div>
+        <h1>Настройки Генерации Доклада</h1>
+    </div>
 
     <form id="settingsForm">
-
-        <div class="setting-group">
-            <h2>Общие</h2>
+        <div class="section">
+            <h2><span class="section-icon">🎨</span>Тема и настройки</h2>
             
-            <label for="username">Имя пользователя:</label>
-            <input type="text" id="username" name="username" value="user_example" required>
+            <div class="form-group">
+                <label for="topic">Тема доклада (обязательно)</label>
+                <input type="text" id="topic" placeholder="Например: Влияние AI на научное сообщество" required>
+            </div>
 
-            <label for="email">Электронная почта:</label>
-            <input type="email" id="email" name="email" value="user@example.com" required>
+            <div class="form-group">
+                <label for="description">Дополнительные требования / Описание</label>
+                <textarea id="description" rows="3" placeholder="Укажите, что нужно добавить или исключить, например: 'Сосредоточиться на этических аспектах.'"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="language">Язык доклада</label>
+                <select id="language">
+                    <option value="Русский">Русский</option>
+                    <option value="English">English</option>
+                </select>
+            </div>
         </div>
 
-        <div class="setting-group">
-            <h2>Уведомления</h2>
+        <div class="section">
+            <h2><span class="section-icon">📝</span>Форматирование текста</h2>
             
-            <label for="email_notify">
-                <input type="checkbox" id="email_notify" name="email_notify" checked>
-                Получать уведомления по почте
-            </label>
+            <div class="form-group">
+                <label for="font">Шрифт</label>
+                <select id="font">
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Calibri">Calibri</option>
+                    <option value="Verdana">Verdana</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="text_size">Размер основного текста (pt)</label>
+                <input type="number" id="text_size" value="14" min="10" max="20" step="1">
+            </div>
             
-            <label for="newsletter">
-                <input type="checkbox" id="newsletter" name="newsletter">
-                Подписаться на рассылку новостей
-            </label>
+            <div class="form-group">
+                <label for="text_color_hex">Цвет текста (HEX)</label>
+                <div class="color-input-container">
+                    <input type="text" id="text_color_hex" value="#000000" maxlength="7" pattern="#[0-9A-Fa-f]{6}">
+                    <input type="color" id="text_color_picker" value="#000000">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="spacing">Междустрочный интервал</label>
+                <select id="spacing">
+                    <option value="1.0">Одинарный (1.0)</option>
+                    <option value="1.15">1.15</option>
+                    <option value="1.5">Полуторный (1.5)</option>
+                    <option value="2.0">Двойной (2.0)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="text_align">Выравнивание основного текста</label>
+                <select id="text_align">
+                    <option value="JUSTIFY">По ширине (JUSTIFY)</option>
+                    <option value="LEFT">По левому краю</option>
+                    <option value="CENTER">По центру</option>
+                </select>
+            </div>
         </div>
 
-        <div class="setting-group">
-            <h2>Интерфейс</h2>
+        <div class="section">
+            <h2><span class="section-icon">🔠</span>Настройки заголовков</h2>
             
-            <label for="theme">Выбор темы:</label>
-            <select id="theme" name="theme">
-                <option value="light">Светлая</option>
-                <option value="dark">Темная</option>
-                <option value="system" selected>Системная</option>
-            </select>
+            <div class="form-group">
+                <label for="h1_size">Размер Заголовка H1 (pt)</label>
+                <input type="number" id="h1_size" value="20" min="16" max="30" step="1">
+            </div>
+            
+            <div class="form-group">
+                <label for="h1_align">Выравнивание H1</label>
+                <select id="h1_align">
+                    <option value="LEFT">По левому краю</option>
+                    <option value="CENTER">По центру</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="h2_size">Размер Подзаголовка H2 (pt)</label>
+                <input type="number" id="h2_size" value="16" min="12" max="24" step="1">
+            </div>
+            
+            <div class="form-group">
+                <label for="h2_align">Выравнивание H2</label>
+                <select id="h2_align">
+                    <option value="LEFT">По левому краю</option>
+                    <option value="CENTER">По центру</option>
+                </select>
+            </div>
         </div>
 
-        <button type="submit">Сохранить изменения</button>
+        <div class="section">
+            <h2><span class="section-icon">📄</span>Поля и Дополнительные опции</h2>
+            
+            <div class="form-group">
+                <label for="margin_top">Верхнее поле (см)</label>
+                <input type="number" id="margin_top" value="2.0" step="0.5" min="1.0" max="5.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="margin_bottom">Нижнее поле (см)</label>
+                <input type="number" id="margin_bottom" value="2.0" step="0.5" min="1.0" max="5.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="margin_left">Левое поле (см)</label>
+                <input type="number" id="margin_left" value="3.0" step="0.5" min="1.0" max="5.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="margin_right">Правое поле (см)</label>
+                <input type="number" id="margin_right" value="1.5" step="0.5" min="1.0" max="5.0">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="has_title_page" checked>
+                <label for="has_title_page">Добавить титульный лист</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="has_bibliography" checked>
+                <label for="has_bibliography">Требовать раздел "Список литературы"</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="has_toc">
+                <label for="has_toc">Создать оглавление (Плейсхолдер)</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="page_numbering">
+                <label for="page_numbering">Нумерация страниц (Плейсхолдер)</label>
+            </div>
+        </div>
+        
+        <button type="button" class="create-button" onclick="sendDataToBot()">
+            <div class="button-content">
+                <span>▶️</span>
+                <span>СОЗДАТЬ ДОКЛАД</span>
+            </div>
+        </button>
     </form>
+
+    <div style="height: 50px;"></div> 
 </div>
 
-<script>
-    document.getElementById('settingsForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        alert('Настройки сохранены! (В реальном приложении здесь был бы код для отправки данных на сервер)');
-        // Здесь должен быть код для сбора и отправки данных формы на сервер (AJAX/Fetch)
-    });
-</script>
+    <script>
+        const WebApp = window.Telegram.WebApp;
+        WebApp.ready();
+        
+        // Устанавливаем цвет кнопки из темы Telegram
+        const button = document.querySelector('.create-button');
+        const themeButtonColor = WebApp.themeParams.button_color || '#007bff';
+        const themeButtonTextColor = WebApp.themeParams.button_text_color || '#fff';
+        
+        // Используем CSS-переменные для динамичного градиента
+        document.documentElement.style.setProperty('--tg-button-color', themeButtonColor);
+        button.style.color = themeButtonTextColor;
+        
+        // --- Синхронизация полей ввода цвета ---
+        const hexInput = document.getElementById('text_color_hex');
+        const colorPicker = document.getElementById('text_color_picker');
 
+        // Обработка ввода цвета через палитру
+        colorPicker.addEventListener('input', function() {
+            hexInput.value = this.value.toUpperCase();
+        });
+        
+        // Обработка ввода цвета вручную
+        hexInput.addEventListener('input', function() {
+            const val = this.value.toUpperCase();
+            // Проверка формата #RRGGBB или #RGB
+            if (/^#([0-9A-F]{3}){1,2}$/i.test(val)) {
+                colorPicker.value = val;
+            }
+        });
+        // ---------------------------------------
+
+        /**
+         * Проверяет, является ли значение целым числом в заданном диапазоне.
+         */
+        function validateNumber(element) {
+            // Проверка на корректность входного поля, может быть 'text_size', 'h1_size', и т.д.
+            if (!element) return true; 
+            
+            const value = parseFloat(element.value); // Используем parseFloat для полей с шагом 0.5 (см)
+            const min = parseFloat(element.min);
+            const max = parseFloat(element.max);
+            
+            // Для полей размера текста (pt) убедимся, что это целое число
+            if (element.id.includes('_size')) {
+                if (!Number.isInteger(value)) {
+                    WebApp.showAlert(`Пожалуйста, введите ЦЕЛОЕ число для "${element.previousElementSibling.textContent.trim()}" (от ${element.min} до ${element.max}).`);
+                    element.focus();
+                    return false;
+                }
+            }
+
+            if (isNaN(value) || value < min || value > max) {
+                WebApp.showAlert(`Пожалуйста, введите корректное число для "${element.previousElementSibling.textContent.trim()}" (от ${element.min} до ${element.max}).`);
+                element.focus();
+                return false;
+            }
+            return true;
+        }
+
+
+        function sendDataToBot() {
+            const topic = document.getElementById('topic').value.trim();
+            if (!topic) {
+                WebApp.showAlert('Пожалуйста, введите тему доклада.');
+                document.getElementById('topic').focus();
+                return;
+            }
+            
+            // Проверка числовых полей
+            const numberFields = ['text_size', 'h1_size', 'h2_size', 'margin_top', 'margin_bottom', 'margin_left', 'margin_right'];
+            for (const id of numberFields) {
+                if (!validateNumber(document.getElementById(id))) {
+                    return;
+                }
+            }
+
+            // Показываем индикатор загрузки
+            const originalText = button.querySelector('.button-content').innerHTML;
+            button.querySelector('.button-content').innerHTML = '<span>⏳</span><span>ОТПРАВКА...</span>';
+            button.disabled = true;
+
+
+            // Получаем HEX-цвет и конвертируем его в 0xRRGGBB формат
+            let colorHex = hexInput.value.replace('#', '').toUpperCase();
+
+            // **ИСПРАВЛЕНИЕ: Правильная конвертация 3-значного HEX в 6-значный**
+            if (colorHex.length === 3) {
+                // Расширяем 3-значный HEX до 6-значного: FFF -> FFFFFF
+                colorHex = colorHex.split('').map(c => c + c).join('');
+            }
+            
+            // Гарантируем, что всегда 6 символов, иначе используем черный цвет
+            if (colorHex.length !== 6 || !/^[0-9A-F]{6}$/.test(colorHex)) {
+                colorHex = '000000';
+            }
+            const colorParam = '0x' + colorHex; // Формат для передачи в бэкенд
+
+            // Сбор данных из всех полей
+            const settings = {
+                topic: topic,
+                description: document.getElementById('description').value,
+                language: document.getElementById('language').value,
+
+                font: document.getElementById('font').value,
+                text_size: document.getElementById('text_size').value,
+                spacing: document.getElementById('spacing').value,
+                color: colorParam, // 0xRRGGBB
+                text_align: document.getElementById('text_align').value,
+                
+                h1_size: document.getElementById('h1_size').value,
+                h1_align: document.getElementById('h1_align').value,
+                h2_size: document.getElementById('h2_size').value,
+                h2_align: document.getElementById('h2_align').value,
+
+                margin_top: document.getElementById('margin_top').value,
+                margin_bottom: document.getElementById('margin_bottom').value,
+                margin_left: document.getElementById('margin_left').value,
+                margin_right: document.getElementById('margin_right').value,
+
+                // Отправляем как 'true'/'false'
+                has_title_page: document.getElementById('has_title_page').checked ? 'true' : 'false',
+                has_toc: document.getElementById('has_toc').checked ? 'true' : 'false',
+                has_bibliography: document.getElementById('has_bibliography').checked ? 'true' : 'false',
+                page_numbering: document.getElementById('page_numbering').checked ? 'true' : 'false'
+            };
+
+            // Формирование и отправка строки (key1=val1&key2=val2...)
+            const dataArray = [];
+            for (const key in settings) {
+                // Обязательно используем encodeURIComponent для всех значений!
+                dataArray.push(`${key}=${encodeURIComponent(settings[key])}`);
+            }
+            const dataString = dataArray.join('&');
+
+            // Ключевая функция для отправки данных в бота
+            WebApp.sendData(dataString);
+            
+            // Закрываем Web App через небольшую задержку
+            setTimeout(() => {
+                WebApp.close();
+            }, 500);
+        }
+        
+        // ** Заполнение полей начальными значениями из URL (КЛЮЧЕВОЙ БЛОК) **
+        // Используется для восстановления настроек при повторном открытии из бота
+        if (WebApp.initDataUnsafe.query_id) {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            for (const [key, value] of urlParams.entries()) {
+                const element = document.getElementById(key);
+                
+                if (element) {
+                    const decodedValue = decodeURIComponent(value);
+
+                    if (element.type === 'checkbox') {
+                        element.checked = decodedValue === 'true';
+                    } 
+                    else if (key === 'color') {
+                        // Обработка цвета: 0xRRGGBB -> #RRGGBB
+                        if (decodedValue.startsWith('0x') && decodedValue.length === 8) {
+                            const hexColor = '#' + decodedValue.substring(2);
+                            hexInput.value = hexColor.toUpperCase();
+                            colorPicker.value = hexColor.toUpperCase();
+                        }
+                    }
+                    // Применяем декодированное значение ко всем остальным полям (включая SELECT, INPUT, TEXTAREA)
+                    else {
+                        element.value = decodedValue; 
+                    }
+                }
+            }
+            // Устанавливаем размер Web App под контент после загрузки настроек
+            WebApp.expand(); 
+        } else {
+            // Если нет данных, просто разворачиваем окно
+            WebApp.expand();
+        }
+    </script>
 </body>
 </html>
