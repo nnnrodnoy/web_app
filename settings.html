@@ -1,94 +1,167 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Настройки форматирования</title>
+    <title>Настройка доклада</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f0f0f0;
-            color: #333;
+            padding: 10px;
+            background-color: var(--tg-theme-bg-color, #f0f0f0);
+            color: var(--tg-theme-text-color, #333);
         }
         .container {
-            max-width: 400px;
+            max-width: 600px;
             margin: auto;
-            background: #fff;
-            padding: 20px;
+            background: var(--tg-theme-secondary-bg-color, #fff);
+            padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
+        h2 {
+            color: var(--tg-theme-link-color, #007bff);
+            border-bottom: 1px solid var(--tg-theme-hint-color, #ccc);
+            padding-bottom: 5px;
+            margin-top: 20px;
+        }
         label {
             display: block;
-            margin-top: 15px;
+            margin-top: 10px;
             font-weight: bold;
+            font-size: 0.9em;
         }
-        select, button {
-            width: 100%;
+        input[type="text"], textarea, select {
+            width: calc(100% - 20px);
             padding: 10px;
             margin-top: 5px;
             border-radius: 4px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--tg-theme-hint-color, #ccc);
             box-sizing: border-box;
+            background-color: var(--tg-theme-text-color, #fff); /* Исправлено */
+            color: var(--tg-theme-text-color, #333);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .setting-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .setting-group > div {
+            flex: 1;
         }
         button {
-            background-color: #007bff;
-            color: white;
+            background-color: var(--tg-theme-button-color, #007bff);
+            color: var(--tg-theme-button-text-color, white);
             cursor: pointer;
             margin-top: 20px;
+            padding: 12px;
+            width: 100%;
             border: none;
+            border-radius: 4px;
+            font-size: 1.1em;
         }
         button:hover {
-            background-color: #0056b3;
+            opacity: 0.9;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Настройки доклада</h1>
-        <form id="settingsForm">
-            <label for="font">Шрифт:</label>
-            <select id="font" name="font">
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Arial">Arial</option>
-                <option value="Calibri">Calibri</option>
+        <h1>Параметры нового доклада</h1>
+        <form id="reportForm">
+            <h2>Тема и требования</h2>
+            <label for="topic">Тема доклада (обязательно):</label>
+            <input type="text" id="topic" name="topic" required>
+
+            <label for="description">Требования / Описание (необязательно):</label>
+            <textarea id="description" name="description" placeholder="Например: 'Объем 5 страниц, акцент на исторических фактах'."></textarea>
+            
+            <label for="language">Язык генерации:</label>
+            <select id="language" name="language">
+                <option value="Русский">Русский 🇷🇺 (По умолчанию)</option>
+                <option value="English">English 🇬🇧</option>
             </select>
 
-            <label for="size">Размер:</label>
-            <select id="size" name="size">
-                <option value="14pt">14pt</option>
-                <option value="12pt">12pt</option>
-                <option value="16pt">16pt</option>
-            </select>
-        </form>
-        <button onclick="sendSettings()">Сохранить настройки</button>
+            <h2>Настройки форматирования (по умолчанию: Times New Roman, 14pt)</h2>
+            <div class="setting-group">
+                <div>
+                    <label for="font">Шрифт:</label>
+                    <select id="font" name="font">
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Arial">Arial</option>
+                        <option value="Calibri">Calibri</option>
+                        <option value="Verdana">Verdana</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="size">Размер основного текста (pt):</label>
+                    <select id="size" name="size">
+                        <option value="14pt">14 pt</option>
+                        <option value="12pt">12 pt</option>
+                        <option value="16pt">16 pt</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <div>
+                    <label for="spacing">Интервал:</label>
+                    <select id="spacing" name="spacing">
+                        <option value="1.15">1.15 (По умолчанию)</option>
+                        <option value="1.0">Одинарный (1.0)</option>
+                        <option value="1.5">Полуторный (1.5)</option>
+                        <option value="2.0">Двойной (2.0)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="color">Цвет текста (HEX):</label>
+                    <select id="color" name="color">
+                        <option value="0x000000">Черный (По умолчанию)</option>
+                        <option value="0x0000FF">Синий</option>
+                        <option value="0xFF0000">Красный</option>
+                        <option value="0x008000">Зеленый</option>
+                    </select>
+                </div>
+            </div>
+            </form>
+        <button onclick="sendSettings()">Сгенерировать доклад</button>
     </div>
 
     <script>
         const WebApp = window.Telegram.WebApp;
 
-        // Инициализация Web App: скрывает кнопку закрытия Telegram
         WebApp.ready();
-        
-        // Устанавливаем заголовок
         WebApp.setHeaderColor('secondary_bg_color');
 
         function sendSettings() {
-            const form = document.getElementById('settingsForm');
-            const font = form.elements['font'].value;
-            const size = form.elements['size'].value;
-
-            // Формируем строку данных для отправки боту: "font=Arial&size=14pt"
-            const dataString = `font=${encodeURIComponent(font)}&size=${encodeURIComponent(size)}`;
-
-            // Отправляем данные боту (эта строка будет получена в handle_web_app_data в bot.py)
-            WebApp.sendData(dataString);
+            const form = document.getElementById('reportForm');
+            const topic = form.elements['topic'].value.trim();
             
-            // Закрываем Web App после отправки
+            if (!topic) {
+                WebApp.showAlert('Пожалуйста, введите тему доклада.');
+                return;
+            }
+
+            // Собираем все данные формы
+            const formData = new FormData(form);
+            let dataString = [];
+
+            for (let [key, value] of formData.entries()) {
+                // Если значение пустое (например, описание пропущено), не добавляем его
+                if (value.trim()) {
+                    dataString.push(`${encodeURIComponent(key)}=${encodeURIComponent(value.trim())}`);
+                }
+            }
+
+            // Отправляем данные боту: "topic=Тема&description=Описание&font=Arial..."
+            WebApp.sendData(dataString.join('&'));
+            
             WebApp.close(); 
         }
     </script>
 </body>
 </html>
-
