@@ -6,14 +6,13 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         /* ========================================================= */
-        /* UI/UX ИЗМЕНЕНИЯ: МЕНЮ, ПРОЗРАЧНОСТЬ И ЧЕРНЫЙ ТЕКСТ */
+        /* UI/UX СТИЛИ */
         /* ========================================================= */
         :root {
-            /* Дефолтные значения (используются для расчета RGB) */
             --tg-theme-bg-color: #f0f0f0;
             --tg-theme-secondary-bg-color: #ffffff;
             --tg-theme-link-color: #007bff;
-            --tg-theme-secondary-bg-color-rgb: 255, 255, 255; /* Дефолт */
+            --tg-theme-secondary-bg-color-rgb: 255, 255, 255;
         }
         
         body {
@@ -21,7 +20,6 @@
             padding: 0;
             margin: 0;
             background-color: var(--tg-theme-bg-color);
-            background-image: url('background.jpg'); /* Убедитесь, что файл называется background.jpg */
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -31,38 +29,19 @@
 
         .container {
             max-width: 600px;
-            margin: 0 auto; /* Центрируем по горизонтали */
-            padding: 20px 15px; /* Отступы сверху/снизу и по бокам */
+            margin: 0 auto;
+            padding: 20px 15px 100px 15px; /* Увеличен нижний отступ для кнопки */
             box-sizing: border-box;
         }
-
-        /* --- БЛОК ТЕКУЩИХ НАСТРОЕК --- */
-        .current-settings-box {
-            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.75);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            color: #000000;
-        }
-        .current-settings-box h1 {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-            font-size: 1.2em;
-        }
-
+        
         /* --- КАРТОЧКА МЕНЮ (Accordion Item) --- */
         .menu-item {
-            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.65); /* Прозрачность 65% */
-            backdrop-filter: blur(8px);
-            border-radius: 10px;
+            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.9); 
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
             margin-bottom: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            transition: box-shadow 0.2s;
-        }
-        .menu-item:hover {
-             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
         .menu-header {
@@ -73,19 +52,23 @@
             align-items: center;
             font-size: 1.1em;
             font-weight: 600;
-            color: #000000; /* Чёрный текст */
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            color: #000000;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .menu-header:hover {
+            background-color: rgba(0,0,0,0.02);
         }
 
         .menu-content {
             padding: 0 20px 15px 20px;
             overflow: hidden;
-            max-height: 0; /* Скрыто по умолчанию */
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            max-height: 0;
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
         }
         
         .menu-item.active .menu-content {
-            max-height: 500px; /* Достаточно для раскрытия */
+            max-height: 800px; 
             padding-top: 15px;
         }
 
@@ -97,47 +80,57 @@
             font-size: 0.9em;
             color: #333333;
         }
-        input[type="text"], textarea, select {
+        input[type="text"], input[type="number"], textarea, select {
             width: 100%;
             padding: 12px;
             margin-top: 8px;
             border-radius: 8px;
             border: 1px solid rgba(0,0,0,0.3); 
             box-sizing: border-box;
-            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.5); /* Прозрачность 50% */
+            background-color: #ffffff; 
             color: #000000; 
             font-size: 1em;
-            transition: border-color 0.2s, box-shadow 0.2s;
         }
         input:focus, textarea:focus, select:focus {
             border-color: var(--tg-theme-link-color);
             box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.4);
             outline: none;
-            background-color: rgba(var(--tg-theme-secondary-bg-color-rgb), 0.8); 
         }
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 80px;
         }
         .setting-group {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
-            margin-bottom: 10px;
+            margin-top: 10px;
         }
         .setting-group > div {
             flex: 1 1 calc(50% - 15px);
             min-width: 150px;
         }
-        button {
-             display: none; 
+        
+        /* Группа полей страницы */
+        .margin-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
-
+        .margin-group > div {
+            min-width: 100%;
+            flex: none;
+        }
+        
         @media (max-width: 450px) {
             .setting-group > div {
                 flex: 1 1 100%;
             }
+            .margin-group {
+                grid-template-columns: 1fr;
+            }
         }
+        
     </style>
 </head>
 <body>
@@ -147,27 +140,31 @@
         
         <div class="menu-item active">
             <div class="menu-header" onclick="toggleMenu(this)">
-                <span>📝 Тема и общие требования</span>
+                <span>📝 Тема и Общие требования</span>
                 <span class="arrow">▼</span>
             </div>
             <div class="menu-content">
                 <label for="topic">Тема доклада (обязательно):</label>
                 <input type="text" id="topic" name="topic" required>
 
-                <label for="description">Требования / Описание (необязательно):</label>
+                <label for="description">Дополнительные требования / Описание:</label>
                 <textarea id="description" name="description" placeholder="Например: 'Объем 5 страниц, акцент на исторических фактах'."></textarea>
                 
-                <label for="language">Язык генерации:</label>
-                <select id="language" name="language">
-                    <option value="Русский">Русский 🇷🇺 (По умолчанию)</option>
-                    <option value="English">English 🇬🇧</option>
-                </select>
+                <div class="setting-group">
+                    <div>
+                        <label for="language">Язык генерации:</label>
+                        <select id="language" name="language">
+                            <option value="Русский">Русский 🇷🇺 (По умолчанию)</option>
+                            <option value="English">English 🇬🇧</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
-
+        
         <div class="menu-item">
             <div class="menu-header" onclick="toggleMenu(this)">
-                <span>✍️ Форматирование основного текста</span>
+                <span>✍️ Форматирование текста</span>
                 <span class="arrow">▶</span>
             </div>
             <div class="menu-content">
@@ -182,18 +179,18 @@
                         </select>
                     </div>
                     <div>
-                        <label for="size">Размер текста (pt):</label>
-                        <select id="size" name="size">
-                            <option value="14pt">14 pt (По умолч.)</option>
-                            <option value="12pt">12 pt</option>
-                            <option value="16pt">16 pt</option>
+                        <label for="text_size">Размер основного текста (pt):</label>
+                        <select id="text_size" name="text_size">
+                            <option value="14">14 pt (По умолч.)</option>
+                            <option value="12">12 pt</option>
+                            <option value="16">16 pt</option>
                         </select>
                     </div>
                 </div>
-
+                
                 <div class="setting-group">
                     <div>
-                        <label for="spacing">Интервал:</label>
+                        <label for="spacing">Межстрочный интервал:</label>
                         <select id="spacing" name="spacing">
                             <option value="1.15">1.15 (По умолч.)</option>
                             <option value="1.0">Одинарный (1.0)</option>
@@ -202,24 +199,53 @@
                         </select>
                     </div>
                     <div>
-                        <label for="color">Цвет текста (HEX):</label>
+                        <label for="color">Цвет текста:</label>
                         <select id="color" name="color">
-                            <option value="0x000000">Черный (0x000000)</option>
-                            <option value="0x0000FF">Синий (0x0000FF)</option>
-                            <option value="0xFF0000">Красный (0x00FF00)</option>
-                            <option value="0x008000">Зеленый (0x008000)</option>
+                            <option value="0x000000">Черный (По умолч.)</option>
+                            <option value="0x0000FF">Синий</option>
+                            <option value="0xFF0000">Красный</option>
+                            <option value="0x008000">Зеленый</option>
                         </select>
                     </div>
                 </div>
+                
+                <label for="text_align">Выравнивание основного текста:</label>
+                <select id="text_align" name="text_align">
+                    <option value="JUSTIFY">По ширине (По умолч.)</option>
+                    <option value="LEFT">По левому краю</option>
+                    <option value="CENTER">По центру</option>
+                    <option value="RIGHT">По правому краю</option>
+                </select>
             </div>
         </div>
         
         <div class="menu-item">
             <div class="menu-header" onclick="toggleMenu(this)">
-                <span>📑 Форматирование заголовков</span>
+                <span>📑 Заголовки, Абзацы и Детализация (AI)</span>
                 <span class="arrow">▶</span>
             </div>
             <div class="menu-content">
+                <div class="setting-group">
+                    <div>
+                        <label for="detail_level">Уровень детализации (AI):</label>
+                        <select id="detail_level" name="detail_level">
+                            <option value="Средний">Средний (По умолч.)</option>
+                            <option value="Краткий">Краткий</option>
+                            <option value="Подробный">Подробный</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="paragraph_style">Стиль абзацев (AI):</label>
+                        <select id="paragraph_style" name="paragraph_style">
+                            <option value="Средний">Средний (По умолч.)</option>
+                            <option value="Короткий">Короткий (1-2 пред.)</option>
+                            <option value="Длинный">Длинный (Академ.)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <hr style="margin: 20px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.1);">
+                
                 <div class="setting-group">
                     <div>
                         <label for="h1_align">Выравнивание H1:</label>
@@ -238,42 +264,108 @@
                         </select>
                     </div>
                 </div>
+                
+                <div class="setting-group">
+                    <div>
+                        <label for="h1_size">Размер H1 (pt):</label>
+                        <select id="h1_size" name="h1_size">
+                            <option value="20">20 pt (По умолч.)</option>
+                            <option value="18">18 pt</option>
+                            <option value="24">24 pt</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="h2_size">Размер H2 (pt):</label>
+                        <select id="h2_size" name="h2_size">
+                            <option value="16">16 pt (По умолч.)</option>
+                            <option value="14">14 pt</option>
+                            <option value="18">18 pt</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="menu-item">
             <div class="menu-header" onclick="toggleMenu(this)">
-                <span>📦 Структура доклада</span>
+                <span>📦 Структура и Опции Документа</span>
                 <span class="arrow">▶</span>
             </div>
             <div class="menu-content">
-                <label for="has_title_page">Титульный лист:</label>
-                <select id="has_title_page" name="has_title_page">
-                    <option value="true">С титульным листом (По умолч.)</option>
-                    <option value="false">Без титульного листа</option>
-                </select>
-
-                <label for="has_toc">Оглавление:</label>
-                <select id="has_toc" name="has_toc">
-                    <option value="false">Не добавлять (По умолч.)</option>
-                    <option value="true">Добавить место для оглавления</option>
-                </select>
+                <div class="setting-group">
+                    <div>
+                        <label for="has_title_page">Титульный лист:</label>
+                        <select id="has_title_page" name="has_title_page">
+                            <option value="true">С титульным листом (По умолч.)</option>
+                            <option value="false">Без титульного листа</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="has_toc">Оглавление:</label>
+                        <select id="has_toc" name="has_toc">
+                            <option value="false">Не добавлять (По умолч.)</option>
+                            <option value="true">Добавить место для оглавления</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <div>
+                        <label for="has_bibliography">Список литературы (AI):</label>
+                        <select id="has_bibliography" name="has_bibliography">
+                            <option value="true">Добавить (По умолч.)</option>
+                            <option value="false">Не добавлять</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="page_numbering">Нумерация страниц:</label>
+                        <select id="page_numbering" name="page_numbering">
+                            <option value="false">Выключить (По умолч.)</option>
+                            <option value="true">Включить (Справа внизу)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-item">
+            <div class="menu-header" onclick="toggleMenu(this)">
+                <span>📐 Поля страницы (см)</span>
+                <span class="arrow">▶</span>
+            </div>
+            <div class="menu-content">
+                <p style="font-size: 0.9em; color: #555555;">Введите значения в сантиметрах (см). Стандарт: Лев-3, Прав-1.5, Верх-2, Ниж-2.</p>
+                <div class="margin-group">
+                    <div>
+                        <label for="margin_left">Левое поле (см):</label>
+                        <input type="number" id="margin_left" name="margin_left" value="3.0" min="0.5" step="0.1">
+                    </div>
+                    <div>
+                        <label for="margin_right">Правое поле (см):</label>
+                        <input type="number" id="margin_right" name="margin_right" value="1.5" min="0.5" step="0.1">
+                    </div>
+                    <div>
+                        <label for="margin_top">Верхнее поле (см):</label>
+                        <input type="number" id="margin_top" name="margin_top" value="2.0" min="0.5" step="0.1">
+                    </div>
+                    <div>
+                        <label for="margin_bottom">Нижнее поле (см):</label>
+                        <input type="number" id="margin_bottom" name="margin_bottom" value="2.0" min="0.5" step="0.1">
+                    </div>
+                </div>
             </div>
         </div>
 
     </form>
-    
-    <div class="current-settings-box">
-        <h1>Текущие настройки форматирования:</h1>
-        <p id="current-settings-summary">Не заданы</p>
-    </div>
 </div>
 
-    <script>
+<script>
         const WebApp = window.Telegram.WebApp;
 
         WebApp.ready();
-        WebApp.setHeaderColor('#00000000'); 
+        // Устанавливаем цвет шапки прозрачным, чтобы Web App был похож на нативное приложение
+        WebApp.setHeaderColor(WebApp.themeParams.secondary_bg_color || '#00000000'); 
+        WebApp.setBackgroundColor(WebApp.themeParams.bg_color || '#f0f0f0');
 
         function getRgbFromHex(hex) {
             if (!hex || hex.length !== 7 || hex[0] !== '#') return [255, 255, 255]; 
@@ -287,7 +379,6 @@
             }
         }
 
-        // --- Функция для переключения меню (аккордеон) ---
         function toggleMenu(header) {
             const item = header.closest('.menu-item');
             const content = item.querySelector('.menu-content');
@@ -302,11 +393,16 @@
             }
         }
         
-        // --- Установка настроек из URL ---
         function loadSettingsFromURL() {
             const urlParams = new URLSearchParams(window.location.search);
-            const settingsKeys = ['font', 'size', 'spacing', 'color', 'h1_align', 'h2_align', 'has_title_page', 'has_toc'];
-            let summaryText = "";
+            // Все ключи настроек
+            const settingsKeys = [
+                'font', 'text_size', 'spacing', 'color', 'text_align', 
+                'h1_align', 'h2_align', 'h1_size', 'h2_size',
+                'has_title_page', 'has_toc', 'has_bibliography', 'page_numbering',
+                'margin_left', 'margin_right', 'margin_top', 'margin_bottom',
+                'language', 'detail_level', 'paragraph_style'
+            ];
 
             settingsKeys.forEach(key => {
                 if (urlParams.has(key)) {
@@ -314,37 +410,25 @@
                     const element = document.getElementById(key);
                     
                     if (element) {
-                        let found = false;
-                        for (let i = 0; i < element.options.length; i++) {
-                            if (element.options[i].value === value) {
-                                element.value = value;
-                                found = true;
-                                
-                                // Добавляем в сводку только ключевые настройки форматирования текста
-                                if (['font', 'size', 'spacing'].includes(key)) {
-                                    const optionText = element.options[i].text.replace(/\s\(.*\)/, '').replace(' (По умолч.)', ''); 
-                                    summaryText += `${key.charAt(0).toUpperCase()}: ${optionText}, `;
-                                } else if (key === 'color') {
-                                    const optionText = element.options[i].text.split('(')[0].trim();
-                                    summaryText += `Цвет: ${optionText}, `;
+                        // Для текстовых/числовых полей просто устанавливаем value
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.value = value;
+                        } else {
+                            // Для select ищем совпадение
+                            for (let i = 0; i < element.options.length; i++) {
+                                if (element.options[i].value === value) {
+                                    element.value = value;
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }
                 }
             });
             
-            const summaryElement = document.getElementById('current-settings-summary');
-            if (summaryText) {
-                summaryElement.textContent = summaryText.slice(0, -2); 
-            } else {
-                summaryElement.textContent = "Ш: Times New Roman, Р: 14 pt, И: 1.15, Цвет: Черный"; 
-            }
-
-            // --- Установка главной кнопки ---
+            // --- Установка главной кнопки (КНОПКА "СОЗДАТЬ") ---
             WebApp.setMainButton({
-                text: 'СГЕНЕРИРОВАТЬ ДОКЛАД',
+                text: '▶️ СОЗДАТЬ ДОКЛАД',
                 isVisible: true
             });
             WebApp.MainButton.onClick(sendSettings);
@@ -353,12 +437,14 @@
             const themeParams = WebApp.themeParams;
             if (themeParams && themeParams.secondary_bg_color) {
                 const secondaryBgColor = themeParams.secondary_bg_color;
-                // Telegram HEX включает #, но getRgbFromHex это обрабатывает
-                const [r, g, b] = getRgbFromHex(secondaryBgColor); 
+                const [r, g, b] = getRgbFromHex(secondaryBgColor);
                 document.documentElement.style.setProperty('--tg-theme-secondary-bg-color-rgb', `${r},${g},${b}`);
             } else {
-                // Если тема не пришла, используем дефолтные RGB (белый)
                 document.documentElement.style.setProperty('--tg-theme-secondary-bg-color-rgb', `255, 255, 255`);
+            }
+            
+            if (themeParams && themeParams.link_color) {
+                 document.documentElement.style.setProperty('--tg-theme-link-color', themeParams.link_color);
             }
         }
         
@@ -373,6 +459,17 @@
 
             const formData = new FormData(form);
             let dataString = [];
+
+            // Проверка числовых полей полей страницы
+            const margins = ['margin_left', 'margin_right', 'margin_top', 'margin_bottom'];
+            for (const key of margins) {
+                const value = parseFloat(form.elements[key].value);
+                if (isNaN(value) || value <= 0) {
+                     WebApp.showAlert(`Неверное значение для ${key}. Поля должны быть положительным числом.`);
+                     return;
+                }
+            }
+
 
             for (let [key, value] of formData.entries()) {
                 if (value.trim()) {
