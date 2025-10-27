@@ -360,7 +360,7 @@
             <div class="form-group">
                 <label for="text_color_hex">Цвет текста (HEX)</label>
                 <div class="color-input-container">
-                    <input type="text" id="text_color_hex" value="#000000" maxlength="7" pattern="#[0-9A-Fa-f]{6}">
+                    <input type="text" id="text_color_hex" value="#000000" maxlength="7" pattern="#[0-9A-Fa-f]{3,6}">
                     <input type="color" id="text_color_picker" value="#000000">
                 </div>
             </div>
@@ -479,7 +479,6 @@
         const themeButtonColor = WebApp.themeParams.button_color || '#007bff';
         const themeButtonTextColor = WebApp.themeParams.button_text_color || '#fff';
         
-        // Используем CSS-переменные для динамичного градиента
         document.documentElement.style.setProperty('--tg-button-color', themeButtonColor);
         button.style.color = themeButtonTextColor;
         
@@ -487,39 +486,35 @@
         const hexInput = document.getElementById('text_color_hex');
         const colorPicker = document.getElementById('text_color_picker');
 
-        // Обработка ввода цвета через палитру
         colorPicker.addEventListener('input', function() {
             hexInput.value = this.value.toUpperCase();
         });
         
-        // Обработка ввода цвета вручную
         hexInput.addEventListener('input', function() {
             const val = this.value.toUpperCase();
-            // Проверка формата #RRGGBB или #RGB
             if (/^#([0-9A-F]{3}){1,2}$/i.test(val)) {
-                colorPicker.value = val;
+                colorPicker.value = val.length === 4 ? expandHex(val) : val;
             }
         });
+        
+        function expandHex(shortHex) {
+            // #F00 -> #FF0000
+            return '#' + shortHex.substring(1).split('').map(c => c + c).join('');
+        }
         // ---------------------------------------
 
-        /**
-         * Проверяет, является ли значение целым числом в заданном диапазоне.
-         */
         function validateNumber(element) {
-            // Проверка на корректность входного поля, может быть 'text_size', 'h1_size', и т.д.
             if (!element) return true; 
             
-            const value = parseFloat(element.value); // Используем parseFloat для полей с шагом 0.5 (см)
+            const value = parseFloat(element.value);
             const min = parseFloat(element.min);
             const max = parseFloat(element.max);
             
-            // Для полей размера текста (pt) убедимся, что это целое число
-            if (element.id.includes('_size')) {
-                if (!Number.isInteger(value)) {
-                    WebApp.showAlert(`Пожалуйста, введите ЦЕЛОЕ число для "${element.previousElementSibling.textContent.trim()}" (от ${element.min} до ${element.max}).`);
-                    element.focus();
-                    return false;
-                }
+            // Проверка на целое число для размеров шрифта
+            if (element.id.includes('_size') && !Number.isInteger(value)) {
+                WebApp.showAlert(`Пожалуйста, введите ЦЕЛОЕ число для "${element.previousElementSibling.textContent.trim()}" (от ${element.min} до ${element.max}).`);
+                element.focus();
+                return false;
             }
 
             if (isNaN(value) || value < min || value > max) {
@@ -547,7 +542,6 @@
                 }
             }
 
-            // Показываем индикатор загрузки
             const originalText = button.querySelector('.button-content').innerHTML;
             button.querySelector('.button-content').innerHTML = '<span>⏳</span><span>ОТПРАВКА...</span>';
             button.disabled = true;
@@ -556,9 +550,8 @@
             // Получаем HEX-цвет и конвертируем его в 0xRRGGBB формат
             let colorHex = hexInput.value.replace('#', '').toUpperCase();
 
-            // **ИСПРАВЛЕНИЕ: Правильная конвертация 3-значного HEX в 6-значный**
+            // ИСПРАВЛЕНИЕ: Правильная конвертация 3-значного HEX в 6-значный
             if (colorHex.length === 3) {
-                // Расширяем 3-значный HEX до 6-значного: FFF -> FFFFFF
                 colorHex = colorHex.split('').map(c => c + c).join('');
             }
             
@@ -600,7 +593,6 @@
             // Формирование и отправка строки (key1=val1&key2=val2...)
             const dataArray = [];
             for (const key in settings) {
-                // Обязательно используем encodeURIComponent для всех значений!
                 dataArray.push(`${key}=${encodeURIComponent(settings[key])}`);
             }
             const dataString = dataArray.join('&');
@@ -608,14 +600,13 @@
             // Ключевая функция для отправки данных в бота
             WebApp.sendData(dataString);
             
-            // Закрываем Web App через небольшую задержку
+            // Закрываем Web App
             setTimeout(() => {
                 WebApp.close();
             }, 500);
         }
         
         // ** Заполнение полей начальными значениями из URL (КЛЮЧЕВОЙ БЛОК) **
-        // Используется для восстановления настроек при повторном открытии из бота
         if (WebApp.initDataUnsafe.query_id) {
             const urlParams = new URLSearchParams(window.location.search);
             
@@ -636,16 +627,14 @@
                             colorPicker.value = hexColor.toUpperCase();
                         }
                     }
-                    // Применяем декодированное значение ко всем остальным полям (включая SELECT, INPUT, TEXTAREA)
+                    // Применяем декодированное значение ко всем остальным полям
                     else {
                         element.value = decodedValue; 
                     }
                 }
             }
-            // Устанавливаем размер Web App под контент после загрузки настроек
             WebApp.expand(); 
         } else {
-            // Если нет данных, просто разворачиваем окно
             WebApp.expand();
         }
     </script>
