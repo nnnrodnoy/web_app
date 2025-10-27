@@ -10,15 +10,15 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 10px 0; /* Уменьшаем вертикальный padding */
-            /* Используем переменные темы Telegram для адаптивного дизайна */
-            background-color: transparent; /* ФОН: Делаем прозрачным, чтобы просвечивал фон Telegram */
+            padding: 10px 0;
+            /* КЛЮЧЕВОЕ: Фон должен быть прозрачным, чтобы просвечивала тема Telegram */
+            background-color: transparent;
             color: var(--tg-theme-text-color, #1c1c1e);
             transition: background-color 0.3s, color 0.3s;
-            overflow-y: auto; 
+            overflow-y: auto; /* Обеспечивает прокрутку */
         }
 
-        /* Общий контейнер для всей формы для красивого центрирования */
+        /* Общий контейнер для всей формы */
         .form-container {
             max-width: 600px;
             margin: 0 auto;
@@ -28,20 +28,30 @@
         h1 {
             color: var(--tg-theme-text-color, #000);
             font-size: 1.5em;
+            font-weight: 700;
             margin-bottom: 20px;
-            /* Убираем черту, чтобы не нарушать дизайн */
-            /* border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #dcdcdc); */
-            padding-bottom: 10px;
             padding-left: 10px;
         }
 
         .section {
             margin-bottom: 20px;
             padding: 15px;
-            /* КЛЮЧЕВОЕ: Полупрозрачный фон для эффекта "стекла" */
+            /* СТИЛЬ GLASSMORPHISM/АКРИЛА: Полупрозрачный фон */
             background-color: var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.9)); 
-            border-radius: 12px;
+            border-radius: 18px; /* Сильное закругление */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.1));
+        }
+        
+        /* Заголовки секций */
+        .section h2 {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--tg-theme-text-color, #000);
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--tg-theme-hint-color, rgba(0, 0, 0, 0.1));
+            padding-bottom: 5px;
         }
 
         label {
@@ -55,16 +65,16 @@
 
         input[type="text"], textarea, select, input[type="number"], .color-input-container input[type="text"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--tg-theme-hint-color, #dcdcdc);
-            border-radius: 8px;
+            padding: 12px; /* Увеличенный padding для красоты */
+            border: none; /* Убираем стандартную рамку */
+            border-radius: 12px; /* Закругленные края полей */
             box-sizing: border-box;
-            /* Фон полей ввода тоже должен быть полупрозрачным */
-            background-color: var(--tg-theme-bg-color, rgba(255, 255, 255, 0.8));
+            /* Фон полей: немного темнее/светлее основного фона, но прозрачный */
+            background-color: var(--tg-theme-bg-color, rgba(244, 244, 245, 0.9));
             color: var(--tg-theme-text-color, #000);
             font-size: 1em;
         }
-        
+
         /* Группа выбора цвета */
         .color-input-container {
             display: flex;
@@ -78,13 +88,9 @@
             height: 40px;
             padding: 0;
             margin-left: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--tg-theme-hint-color, #dcdcdc);
+            border-radius: 12px; /* Закругление пикера */
+            border: 2px solid var(--tg-theme-hint-color, #dcdcdc);
             cursor: pointer;
-        }
-
-        textarea {
-            resize: vertical;
         }
 
         .checkbox-group {
@@ -94,6 +100,7 @@
         }
         .checkbox-group input[type="checkbox"] {
             margin-right: 10px;
+            /* Кастомный стиль для чекбоксов, если нужно */
         }
         .checkbox-group label {
             margin: 0;
@@ -101,20 +108,23 @@
             color: var(--tg-theme-text-color, #000);
         }
 
-        /* Стиль для кнопки "Создать доклад" - ГЛАВНЫЙ ЭЛЕМЕНТ */
+        /* Стиль для кнопки "Создать доклад" */
         #createReportBtn {
             width: 100%;
-            padding: 15px;
+            padding: 18px; /* Больше padding для акцента */
             margin-top: 30px;
             border: none;
-            border-radius: 12px;
+            border-radius: 16px; /* Большое закругление кнопки */
             /* Используем цвета из темы Telegram */
-            background-color: var(--tg-theme-button-color, #28a745); 
+            background-color: var(--tg-theme-button-color, #007bff); 
             color: var(--tg-theme-button-text-color, #fff);
-            font-size: 1.1em;
+            font-size: 1.2em;
             font-weight: 700;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+        #createReportBtn:hover {
+            opacity: 0.9;
         }
         #createReportBtn:active {
             opacity: 0.8;
@@ -252,12 +262,11 @@
 </div>
 
     <script>
-        // Инициализация WebApp и установка цвета кнопки
         const WebApp = window.Telegram.WebApp;
         WebApp.ready();
         
-        // Устанавливаем цвет кнопки, чтобы соответствовал теме Telegram
-        document.getElementById('createReportBtn').style.backgroundColor = WebApp.themeParams.button_color || '#28a745';
+        // Устанавливаем цвет кнопки из темы Telegram
+        document.getElementById('createReportBtn').style.backgroundColor = WebApp.themeParams.button_color || '#007bff';
         document.getElementById('createReportBtn').style.color = WebApp.themeParams.button_text_color || '#fff';
         
         // --- Синхронизация полей ввода цвета ---
@@ -274,7 +283,6 @@
         });
         // ---------------------------------------
 
-        // Функция для сбора и отправки всех данных
         function sendDataToBot() {
             const topic = document.getElementById('topic').value.trim();
             if (!topic) {
@@ -282,61 +290,54 @@
                 return;
             }
             
-            // !!! ВАЖНО: Получаем HEX-цвет и конвертируем его в 0xRRGGBB формат для Python !!!
+            // Получаем HEX-цвет и конвертируем его в 0xRRGGBB формат для Python
             let colorHex = hexInput.value.replace('#', '');
             if (colorHex.length === 3) {
-                 // Расширяем FFF до FFFFFF
                 colorHex = colorHex.split('').map(c => c + c).join('');
             }
             const colorParam = '0x' + colorHex.toUpperCase();
 
-            // 1. Сбор данных из всех полей
+            // Сбор данных из всех полей
             const settings = {
-                // Основные параметры
                 topic: topic,
                 description: document.getElementById('description').value,
                 language: document.getElementById('language').value,
                 detail_level: document.getElementById('detail_level').value,
                 paragraph_style: document.getElementById('paragraph_style').value,
 
-                // Форматирование текста
                 font: document.getElementById('font').value,
                 text_size: document.getElementById('text_size').value,
                 spacing: document.getElementById('spacing').value,
                 color: colorParam, // <-- ИСПОЛЬЗУЕМ СКОНВЕРТИРОВАННЫЙ ЦВЕТ
                 text_align: document.getElementById('text_align').value,
                 
-                // Форматирование заголовков
                 h1_size: document.getElementById('h1_size').value,
                 h1_align: document.getElementById('h1_align').value,
                 h2_size: document.getElementById('h2_size').value,
                 h2_align: document.getElementById('h2_align').value,
 
-                // Поля
                 margin_top: document.getElementById('margin_top').value,
                 margin_bottom: document.getElementById('margin_bottom').value,
                 margin_left: document.getElementById('margin_left').value,
                 margin_right: document.getElementById('margin_right').value,
 
-                // Опции (чекбоксы)
                 has_title_page: document.getElementById('has_title_page').checked ? 'true' : 'false',
                 has_toc: document.getElementById('has_toc').checked ? 'true' : 'false',
                 has_bibliography: document.getElementById('has_bibliography').checked ? 'true' : 'false',
                 page_numbering: document.getElementById('page_numbering').checked ? 'true' : 'false'
             };
 
-            // 2. Формирование строки для отправки
+            // Формирование и отправка строки
             const dataArray = [];
             for (const key in settings) {
                 dataArray.push(`${key}=${encodeURIComponent(settings[key])}`);
             }
             const dataString = dataArray.join('&');
 
-            // 3. Отправка данных боту
             WebApp.sendData(dataString);
         }
         
-        // Заполнение полей начальными значениями из URL (передается из main.py)
+        // Заполнение полей начальными значениями из URL
         if (WebApp.initDataUnsafe.query_id) {
             const urlParams = new URLSearchParams(window.location.search);
             
@@ -346,7 +347,7 @@
                     if (element.type === 'checkbox') {
                         element.checked = value === 'true';
                     } 
-                    else if (key === 'color') {
+                    else if (key === 'color' && element.id !== 'text_color_hex' && element.id !== 'text_color_picker') {
                         // Обработка цвета: 0xRRGGBB -> #RRGGBB
                         const hexColor = '#' + value.substring(2);
                         hexInput.value = hexColor;
