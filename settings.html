@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Настройки форматирования</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+            border: none;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Настройки доклада</h1>
+        <form id="settingsForm">
+            <label for="font">Шрифт:</label>
+            <select id="font" name="font">
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Arial">Arial</option>
+                <option value="Calibri">Calibri</option>
+            </select>
+
+            <label for="size">Размер:</label>
+            <select id="size" name="size">
+                <option value="14pt">14pt</option>
+                <option value="12pt">12pt</option>
+                <option value="16pt">16pt</option>
+            </select>
+        </form>
+        <button onclick="sendSettings()">Сохранить настройки</button>
+    </div>
+
+    <script>
+        const WebApp = window.Telegram.WebApp;
+
+        // Инициализация Web App: скрывает кнопку закрытия Telegram
+        WebApp.ready();
+        
+        // Устанавливаем заголовок
+        WebApp.setHeaderColor('secondary_bg_color');
+
+        function sendSettings() {
+            const form = document.getElementById('settingsForm');
+            const font = form.elements['font'].value;
+            const size = form.elements['size'].value;
+
+            // Формируем строку данных для отправки боту: "font=Arial&size=14pt"
+            const dataString = `font=${encodeURIComponent(font)}&size=${encodeURIComponent(size)}`;
+
+            // Отправляем данные боту (эта строка будет получена в handle_web_app_data в bot.py)
+            WebApp.sendData(dataString);
+            
+            // Закрываем Web App после отправки
+            WebApp.close(); 
+        }
+    </script>
+</body>
+</html>
+
