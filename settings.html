@@ -10,27 +10,38 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: var(--tg-theme-bg-color, #f4f4f5);
+            padding: 10px 0; /* Уменьшаем вертикальный padding */
+            /* Используем переменные темы Telegram для адаптивного дизайна */
+            background-color: transparent; /* ФОН: Делаем прозрачным, чтобы просвечивал фон Telegram */
             color: var(--tg-theme-text-color, #1c1c1e);
             transition: background-color 0.3s, color 0.3s;
             overflow-y: auto; 
+        }
+
+        /* Общий контейнер для всей формы для красивого центрирования */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 10px;
         }
 
         h1 {
             color: var(--tg-theme-text-color, #000);
             font-size: 1.5em;
             margin-bottom: 20px;
-            border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #dcdcdc);
+            /* Убираем черту, чтобы не нарушать дизайн */
+            /* border-bottom: 1px solid var(--tg-theme-secondary-bg-color, #dcdcdc); */
             padding-bottom: 10px;
+            padding-left: 10px;
         }
 
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             padding: 15px;
-            background-color: var(--tg-theme-secondary-bg-color, #fff);
+            /* КЛЮЧЕВОЕ: Полупрозрачный фон для эффекта "стекла" */
+            background-color: var(--tg-theme-secondary-bg-color, rgba(255, 255, 255, 0.9)); 
             border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         label {
@@ -48,12 +59,13 @@
             border: 1px solid var(--tg-theme-hint-color, #dcdcdc);
             border-radius: 8px;
             box-sizing: border-box;
-            background-color: var(--tg-theme-bg-color, #fff);
+            /* Фон полей ввода тоже должен быть полупрозрачным */
+            background-color: var(--tg-theme-bg-color, rgba(255, 255, 255, 0.8));
             color: var(--tg-theme-text-color, #000);
             font-size: 1em;
         }
-
-        /* Специальный стиль для поля цвета */
+        
+        /* Группа выбора цвета */
         .color-input-container {
             display: flex;
             align-items: center;
@@ -70,7 +82,7 @@
             border: 1px solid var(--tg-theme-hint-color, #dcdcdc);
             cursor: pointer;
         }
-        
+
         textarea {
             resize: vertical;
         }
@@ -89,12 +101,14 @@
             color: var(--tg-theme-text-color, #000);
         }
 
+        /* Стиль для кнопки "Создать доклад" - ГЛАВНЫЙ ЭЛЕМЕНТ */
         #createReportBtn {
             width: 100%;
             padding: 15px;
             margin-top: 30px;
             border: none;
             border-radius: 12px;
+            /* Используем цвета из темы Telegram */
             background-color: var(--tg-theme-button-color, #28a745); 
             color: var(--tg-theme-button-text-color, #fff);
             font-size: 1.1em;
@@ -109,6 +123,7 @@
 </head>
 <body>
 
+<div class="form-container">
     <h1>📝 Настройки Генерации Доклада</h1>
 
     <div class="section">
@@ -234,26 +249,31 @@
     <button id="createReportBtn" onclick="sendDataToBot()">▶️ СОЗДАТЬ ДОКЛАД</button>
 
     <div style="height: 50px;"></div>
+</div>
 
     <script>
         // Инициализация WebApp и установка цвета кнопки
         const WebApp = window.Telegram.WebApp;
         WebApp.ready();
         
+        // Устанавливаем цвет кнопки, чтобы соответствовал теме Telegram
         document.getElementById('createReportBtn').style.backgroundColor = WebApp.themeParams.button_color || '#28a745';
         document.getElementById('createReportBtn').style.color = WebApp.themeParams.button_text_color || '#fff';
+        
+        // --- Синхронизация полей ввода цвета ---
+        const hexInput = document.getElementById('text_color_hex');
+        const colorPicker = document.getElementById('text_color_picker');
 
-        // Синхронизация полей ввода цвета
-        document.getElementById('text_color_picker').addEventListener('input', function() {
-            document.getElementById('text_color_hex').value = this.value;
+        colorPicker.addEventListener('input', function() {
+            hexInput.value = this.value;
         });
-        document.getElementById('text_color_hex').addEventListener('input', function() {
-            // Убедимся, что это валидный HEX-цвет перед установкой в color-picker
+        hexInput.addEventListener('input', function() {
             if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(this.value)) {
-                document.getElementById('text_color_picker').value = this.value;
+                colorPicker.value = this.value;
             }
         });
-        
+        // ---------------------------------------
+
         // Функция для сбора и отправки всех данных
         function sendDataToBot() {
             const topic = document.getElementById('topic').value.trim();
@@ -262,15 +282,15 @@
                 return;
             }
             
-            // 1. Сбор данных из всех полей
             // !!! ВАЖНО: Получаем HEX-цвет и конвертируем его в 0xRRGGBB формат для Python !!!
-            let colorHex = document.getElementById('text_color_hex').value.replace('#', '');
+            let colorHex = hexInput.value.replace('#', '');
             if (colorHex.length === 3) {
                  // Расширяем FFF до FFFFFF
                 colorHex = colorHex.split('').map(c => c + c).join('');
             }
             const colorParam = '0x' + colorHex.toUpperCase();
-            
+
+            // 1. Сбор данных из всех полей
             const settings = {
                 // Основные параметры
                 topic: topic,
@@ -283,7 +303,7 @@
                 font: document.getElementById('font').value,
                 text_size: document.getElementById('text_size').value,
                 spacing: document.getElementById('spacing').value,
-                color: colorParam, // <-- ВОТ НОВАЯ ПЕРЕМЕННАЯ ЦВЕТА
+                color: colorParam, // <-- ИСПОЛЬЗУЕМ СКОНВЕРТИРОВАННЫЙ ЦВЕТ
                 text_align: document.getElementById('text_align').value,
                 
                 // Форматирование заголовков
@@ -329,8 +349,8 @@
                     else if (key === 'color') {
                         // Обработка цвета: 0xRRGGBB -> #RRGGBB
                         const hexColor = '#' + value.substring(2);
-                        document.getElementById('text_color_hex').value = hexColor;
-                        document.getElementById('text_color_picker').value = hexColor;
+                        hexInput.value = hexColor;
+                        colorPicker.value = hexColor;
                     }
                     else if (element.tagName === 'SELECT' || element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
                         element.value = decodeURIComponent(value); 
