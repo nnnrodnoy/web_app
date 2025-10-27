@@ -15,6 +15,8 @@
             background-color: var(--tg-theme-bg-color, #f4f4f5);
             color: var(--tg-theme-text-color, #1c1c1e);
             transition: background-color 0.3s, color 0.3s;
+            /* КЛЮЧЕВОЕ: Разрешаем прокрутку, если содержимое длиннее экрана */
+            overflow-y: auto; 
         }
 
         h1 {
@@ -78,7 +80,7 @@
             margin-top: 30px;
             border: none;
             border-radius: 12px;
-            background-color: var(--tg-theme-button-color, #28a745); /* Зеленый цвет по умолчанию */
+            background-color: var(--tg-theme-button-color, #28a745); 
             color: var(--tg-theme-button-text-color, #fff);
             font-size: 1.1em;
             font-weight: 700;
@@ -243,7 +245,6 @@
                 font: document.getElementById('font').value,
                 text_size: document.getElementById('text_size').value,
                 spacing: document.getElementById('spacing').value,
-                // Используем HEX-формат для цвета
                 color: '0x000000', 
                 text_align: document.getElementById('text_align').value,
                 
@@ -269,7 +270,6 @@
             // 2. Формирование строки для отправки
             const dataArray = [];
             for (const key in settings) {
-                // Используем encodeURIComponent для безопасной передачи данных
                 dataArray.push(`${key}=${encodeURIComponent(settings[key])}`);
             }
             const dataString = dataArray.join('&');
@@ -285,13 +285,11 @@
             for (const [key, value] of urlParams.entries()) {
                 const element = document.getElementById(key);
                 if (element) {
-                    // Обработка чекбоксов
                     if (element.type === 'checkbox') {
                         element.checked = value === 'true';
                     } 
-                    // Обработка остальных полей
                     else if (element.tagName === 'SELECT' || element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                        element.value = decodeURIComponent(value); // Декодируем для отображения в полях
+                        element.value = decodeURIComponent(value); 
                     }
                 }
             }
