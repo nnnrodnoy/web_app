@@ -298,7 +298,6 @@
         .section:nth-child(2) { animation-delay: 0.2s; }
         .section:nth-child(3) { animation-delay: 0.3s; }
         .section:nth-child(4) { animation-delay: 0.4s; }
-        .section:nth-child(5) { animation-delay: 0.5s; }
     </style>
 </head>
 <body>
@@ -310,7 +309,7 @@
     </div>
 
     <div class="section">
-        <h2><span class="section-icon">🎨</span>Тема и AI-стиль</h2>
+        <h2><span class="section-icon">🎨</span>Тема и настройки</h2>
         
         <div class="form-group">
             <label for="topic">Тема доклада (обязательно)</label>
@@ -327,24 +326,6 @@
             <select id="language">
                 <option value="Русский">Русский</option>
                 <option value="English">English</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="detail_level">Уровень детализации</label>
-            <select id="detail_level">
-                <option value="Низкий">Низкий (краткий обзор)</option>
-                <option value="Средний">Средний (стандартный доклад)</option>
-                <option value="Высокий">Высокий (академическое исследование)</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label for="paragraph_style">Стиль абзацев</label>
-            <select id="paragraph_style">
-                <option value="Короткий">Короткий (1-2 предложения)</option>
-                <option value="Средний">Средний (3-5 предложений)</option>
-                <option value="Длинный">Длинный (академический стиль)</option>
             </select>
         </div>
     </div>
@@ -508,6 +489,12 @@
                 return;
             }
             
+            // Показываем индикатор загрузки
+            const button = document.querySelector('.create-button');
+            const originalText = button.querySelector('.button-content').innerHTML;
+            button.querySelector('.button-content').innerHTML = '<span>⏳</span><span>ОТПРАВКА...</span>';
+            button.disabled = true;
+
             // Получаем HEX-цвет и конвертируем его в 0xRRGGBB формат для Python
             let colorHex = hexInput.value.replace('#', '');
             if (colorHex.length === 3) {
@@ -515,18 +502,16 @@
             }
             const colorParam = '0x' + colorHex.toUpperCase();
 
-            // Сбор данных из всех полей
+            // Сбор данных из всех полей (убраны detail_level и paragraph_style)
             const settings = {
                 topic: topic,
                 description: document.getElementById('description').value,
                 language: document.getElementById('language').value,
-                detail_level: document.getElementById('detail_level').value,
-                paragraph_style: document.getElementById('paragraph_style').value,
 
                 font: document.getElementById('font').value,
                 text_size: document.getElementById('text_size').value,
                 spacing: document.getElementById('spacing').value,
-                color: colorParam, // <-- ИСПОЛЬЗУЕМ СКОНВЕРТИРОВАННЫЙ ЦВЕТ
+                color: colorParam,
                 text_align: document.getElementById('text_align').value,
                 
                 h1_size: document.getElementById('h1_size').value,
@@ -552,7 +537,13 @@
             }
             const dataString = dataArray.join('&');
 
+            // Отправляем данные и закрываем Web App
             WebApp.sendData(dataString);
+            
+            // Закрываем Web App через небольшую задержку
+            setTimeout(() => {
+                WebApp.close();
+            }, 500);
         }
         
         // Заполнение полей начальными значениями из URL
