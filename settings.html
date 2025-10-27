@@ -199,12 +199,14 @@
         .checkbox-group input[type="checkbox"] {
             margin-right: 10px;
             transform: scale(1.2);
+            accent-color: var(--tg-button-color); 
         }
 
         .checkbox-group label {
             margin: 0;
             font-weight: normal;
             color: var(--tg-text-color);
+            cursor: pointer;
         }
 
         /* Кнопка */
@@ -215,7 +217,7 @@
             margin-top: 30px;
             border: none;
             border-radius: 16px;
-            background: linear-gradient(135deg, var(--tg-button-color), #5a67d8);
+            background: linear-gradient(135deg, var(--tg-button-color), #5a67d8); 
             color: var(--tg-button-text-color);
             font-size: 1.2em;
             font-weight: 700;
@@ -236,7 +238,7 @@
             transition: left 0.5s;
         }
 
-        .create-button:hover {
+        .create-button:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
         }
@@ -245,8 +247,13 @@
             left: 100%;
         }
 
-        .create-button:active {
+        .create-button:active:not(:disabled) {
             transform: translateY(-1px);
+        }
+
+        .create-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .button-content {
@@ -308,154 +315,156 @@
         <h1>Настройки Генерации Доклада</h1>
     </div>
 
-    <div class="section">
-        <h2><span class="section-icon">🎨</span>Тема и настройки</h2>
-        
-        <div class="form-group">
-            <label for="topic">Тема доклада (обязательно)</label>
-            <input type="text" id="topic" placeholder="Например: Влияние AI на научное сообщество" required>
+    <form id="settingsForm">
+        <div class="section">
+            <h2><span class="section-icon">🎨</span>Тема и настройки</h2>
+            
+            <div class="form-group">
+                <label for="topic">Тема доклада (обязательно)</label>
+                <input type="text" id="topic" placeholder="Например: Влияние AI на научное сообщество" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Дополнительные требования / Описание</label>
+                <textarea id="description" rows="3" placeholder="Укажите, что нужно добавить или исключить, например: 'Сосредоточиться на этических аспектах.'"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="language">Язык доклада</label>
+                <select id="language">
+                    <option value="Русский">Русский</option>
+                    <option value="English">English</option>
+                </select>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="description">Дополнительные требования / Описание</label>
-            <textarea id="description" rows="3" placeholder="Укажите, что нужно добавить или исключить, например: 'Сосредоточиться на этических аспектах.'"></textarea>
+        <div class="section">
+            <h2><span class="section-icon">📝</span>Форматирование текста</h2>
+            
+            <div class="form-group">
+                <label for="font">Шрифт</label>
+                <select id="font">
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Calibri">Calibri</option>
+                    <option value="Verdana">Verdana</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="text_size">Размер основного текста (pt)</label>
+                <input type="number" id="text_size" value="14" min="10" max="20" step="1" pattern="[0-9]*">
+            </div>
+            
+            <div class="form-group">
+                <label for="text_color_hex">Цвет текста (HEX)</label>
+                <div class="color-input-container">
+                    <input type="text" id="text_color_hex" value="#000000" maxlength="7" pattern="#[0-9A-Fa-f]{6}">
+                    <input type="color" id="text_color_picker" value="#000000">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="spacing">Междустрочный интервал</label>
+                <select id="spacing">
+                    <option value="1.0">Одинарный (1.0)</option>
+                    <option value="1.15">1.15</option>
+                    <option value="1.5">Полуторный (1.5)</option>
+                    <option value="2.0">Двойной (2.0)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="text_align">Выравнивание основного текста</label>
+                <select id="text_align">
+                    <option value="JUSTIFY">По ширине (JUSTIFY)</option>
+                    <option value="LEFT">По левому краю</option>
+                    <option value="CENTER">По центру</option>
+                </select>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="language">Язык доклада</label>
-            <select id="language">
-                <option value="Русский">Русский</option>
-                <option value="English">English</option>
-            </select>
-        </div>
-    </div>
+        <div class="section">
+            <h2><span class="section-icon">🔠</span>Настройки заголовков</h2>
+            
+            <div class="form-group">
+                <label for="h1_size">Размер Заголовка H1 (pt)</label>
+                <input type="number" id="h1_size" value="20" min="16" max="30" step="1" pattern="[0-9]*">
+            </div>
+            
+            <div class="form-group">
+                <label for="h1_align">Выравнивание H1</label>
+                <select id="h1_align">
+                    <option value="LEFT">По левому краю</option>
+                    <option value="CENTER">По центру</option>
+                </select>
+            </div>
 
-    <div class="section">
-        <h2><span class="section-icon">📝</span>Форматирование текста</h2>
-        
-        <div class="form-group">
-            <label for="font">Шрифт</label>
-            <select id="font">
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Arial">Arial</option>
-                <option value="Calibri">Calibri</option>
-                <option value="Verdana">Verdana</option>
-            </select>
+            <div class="form-group">
+                <label for="h2_size">Размер Подзаголовка H2 (pt)</label>
+                <input type="number" id="h2_size" value="16" min="12" max="24" step="1" pattern="[0-9]*">
+            </div>
+            
+            <div class="form-group">
+                <label for="h2_align">Выравнивание H2</label>
+                <select id="h2_align">
+                    <option value="LEFT">По левому краю</option>
+                    <option value="CENTER">По центру</option>
+                </select>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="text_size">Размер основного текста (pt)</label>
-            <input type="number" id="text_size" value="14" min="10" max="20">
-        </div>
-        
-        <div class="form-group">
-            <label for="text_color_hex">Цвет текста (HEX)</label>
-            <div class="color-input-container">
-                <input type="text" id="text_color_hex" value="#000000" maxlength="7" pattern="#[0-9A-Fa-f]{6}">
-                <input type="color" id="text_color_picker" value="#000000">
+        <div class="section">
+            <h2><span class="section-icon">📄</span>Поля и Дополнительные опции</h2>
+            
+            <div class="form-group">
+                <label for="margin_top">Верхнее поле (см)</label>
+                <input type="number" id="margin_top" value="2.0" step="0.5" min="1.0" max="5.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="margin_bottom">Нижнее поле (см)</label>
+                <input type="number" id="margin_bottom" value="2.0" step="0.5" min="1.0" max="5.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="margin_left">Левое поле (см)</label>
+                <input type="number" id="margin_left" value="3.0" step="0.5" min="1.0" max="5.0">
+            </div>
+            
+            <div class="form-group">
+                <label for="margin_right">Правое поле (см)</label>
+                <input type="number" id="margin_right" value="1.5" step="0.5" min="1.0" max="5.0">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="has_title_page" checked>
+                <label for="has_title_page">Добавить титульный лист</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="has_bibliography" checked>
+                <label for="has_bibliography">Требовать раздел "Список литературы"</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="has_toc">
+                <label for="has_toc">Создать оглавление (Плейсхолдер)</label>
+            </div>
+            
+            <div class="checkbox-group">
+                <input type="checkbox" id="page_numbering">
+                <label for="page_numbering">Нумерация страниц (Плейсхолдер)</label>
             </div>
         </div>
         
-        <div class="form-group">
-            <label for="spacing">Междустрочный интервал</label>
-            <select id="spacing">
-                <option value="1.0">Одинарный (1.0)</option>
-                <option value="1.15">1.15</option>
-                <option value="1.5">Полуторный (1.5)</option>
-                <option value="2.0">Двойной (2.0)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="text_align">Выравнивание основного текста</label>
-            <select id="text_align">
-                <option value="JUSTIFY">По ширине (JUSTIFY)</option>
-                <option value="LEFT">По левому краю</option>
-                <option value="CENTER">По центру</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2><span class="section-icon">🔠</span>Настройки заголовков</h2>
-        
-        <div class="form-group">
-            <label for="h1_size">Размер Заголовка H1 (pt)</label>
-            <input type="number" id="h1_size" value="20" min="16" max="30">
-        </div>
-        
-        <div class="form-group">
-            <label for="h1_align">Выравнивание H1</label>
-            <select id="h1_align">
-                <option value="LEFT">По левому краю</option>
-                <option value="CENTER">По центру</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="h2_size">Размер Подзаголовка H2 (pt)</label>
-            <input type="number" id="h2_size" value="16" min="12" max="24">
-        </div>
-        
-        <div class="form-group">
-            <label for="h2_align">Выравнивание H2</label>
-            <select id="h2_align">
-                <option value="LEFT">По левому краю</option>
-                <option value="CENTER">По центру</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="section">
-        <h2><span class="section-icon">📄</span>Поля и Дополнительные опции</h2>
-        
-        <div class="form-group">
-            <label for="margin_top">Верхнее поле (см)</label>
-            <input type="number" id="margin_top" value="2.0" step="0.5" min="1.0" max="5.0">
-        </div>
-        
-        <div class="form-group">
-            <label for="margin_bottom">Нижнее поле (см)</label>
-            <input type="number" id="margin_bottom" value="2.0" step="0.5" min="1.0" max="5.0">
-        </div>
-        
-        <div class="form-group">
-            <label for="margin_left">Левое поле (см)</label>
-            <input type="number" id="margin_left" value="3.0" step="0.5" min="1.0" max="5.0">
-        </div>
-        
-        <div class="form-group">
-            <label for="margin_right">Правое поле (см)</label>
-            <input type="number" id="margin_right" value="1.5" step="0.5" min="1.0" max="5.0">
-        </div>
-
-        <div class="checkbox-group">
-            <input type="checkbox" id="has_title_page" checked>
-            <label for="has_title_page">Добавить титульный лист</label>
-        </div>
-        
-        <div class="checkbox-group">
-            <input type="checkbox" id="has_bibliography" checked>
-            <label for="has_bibliography">Требовать раздел "Список литературы"</label>
-        </div>
-
-        <div class="checkbox-group">
-            <input type="checkbox" id="has_toc">
-            <label for="has_toc">Создать оглавление (Плейсхолдер)</label>
-        </div>
-        
-        <div class="checkbox-group">
-            <input type="checkbox" id="page_numbering">
-            <label for="page_numbering">Нумерация страниц (Плейсхолдер)</label>
-        </div>
-    </div>
-    
-    <button class="create-button" onclick="sendDataToBot()">
-        <div class="button-content">
-            <span>▶️</span>
-            <span>СОЗДАТЬ ДОКЛАД</span>
-        </div>
-    </button>
+        <button type="button" class="create-button" onclick="sendDataToBot()">
+            <div class="button-content">
+                <span>▶️</span>
+                <span>СОЗДАТЬ ДОКЛАД</span>
+            </div>
+        </button>
+    </form>
 
     <div style="height: 50px;"></div>
 </div>
@@ -465,22 +474,48 @@
         WebApp.ready();
         
         // Устанавливаем цвет кнопки из темы Telegram
-        document.querySelector('.create-button').style.background = `linear-gradient(135deg, ${WebApp.themeParams.button_color || '#007bff'}, #5a67d8)`;
-        document.querySelector('.create-button').style.color = WebApp.themeParams.button_text_color || '#fff';
+        const button = document.querySelector('.create-button');
+        const themeButtonColor = WebApp.themeParams.button_color || '#007bff';
+        const themeButtonTextColor = WebApp.themeParams.button_text_color || '#fff';
+        
+        button.style.background = `linear-gradient(135deg, ${themeButtonColor}, #5a67d8)`;
+        button.style.color = themeButtonTextColor;
         
         // --- Синхронизация полей ввода цвета ---
         const hexInput = document.getElementById('text_color_hex');
         const colorPicker = document.getElementById('text_color_picker');
 
+        // Обработка ввода цвета через палитру
         colorPicker.addEventListener('input', function() {
-            hexInput.value = this.value;
+            hexInput.value = this.value.toUpperCase();
         });
+        
+        // Обработка ввода цвета вручную
         hexInput.addEventListener('input', function() {
-            if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(this.value)) {
-                colorPicker.value = this.value;
+            const val = this.value.toUpperCase();
+            // Простая проверка формата #RRGGBB или #RGB
+            if (/^#([0-9A-F]{3}){1,2}$/i.test(val)) {
+                colorPicker.value = val;
             }
         });
         // ---------------------------------------
+
+        /**
+         * Проверяет, является ли значение целым числом в заданном диапазоне.
+         */
+        function validateNumber(element) {
+            const value = parseInt(element.value);
+            const min = parseInt(element.min);
+            const max = parseInt(element.max);
+
+            if (isNaN(value) || value < min || value > max) {
+                WebApp.showAlert(`Пожалуйста, введите корректное целое число для "${element.previousElementSibling.textContent.trim()}" (от ${min} до ${max}).`);
+                element.focus();
+                return false;
+            }
+            return true;
+        }
+
 
         function sendDataToBot() {
             const topic = document.getElementById('topic').value.trim();
@@ -489,20 +524,32 @@
                 return;
             }
             
+            // Проверка числовых полей
+            const numberFields = ['text_size', 'h1_size', 'h2_size'];
+            for (const id of numberFields) {
+                if (!validateNumber(document.getElementById(id))) {
+                    return;
+                }
+            }
+
             // Показываем индикатор загрузки
-            const button = document.querySelector('.create-button');
             const originalText = button.querySelector('.button-content').innerHTML;
             button.querySelector('.button-content').innerHTML = '<span>⏳</span><span>ОТПРАВКА...</span>';
             button.disabled = true;
 
-            // Получаем HEX-цвет и конвертируем его в 0xRRGGBB формат для Python
-            let colorHex = hexInput.value.replace('#', '');
+            // Получаем HEX-цвет и конвертируем его в 0xRRGGBB формат
+            let colorHex = hexInput.value.replace('#', '').toUpperCase();
             if (colorHex.length === 3) {
+                // Расширяем 3-значный HEX до 6-значного
                 colorHex = colorHex.split('').map(c => c + c).join('');
             }
-            const colorParam = '0x' + colorHex.toUpperCase();
+            // Гарантируем, что всегда 6 символов, иначе используем #000000
+            if (colorHex.length !== 6) {
+                colorHex = '000000';
+            }
+            const colorParam = '0x' + colorHex;
 
-            // Сбор данных из всех полей (убраны detail_level и paragraph_style)
+            // Сбор данных из всех полей
             const settings = {
                 topic: topic,
                 description: document.getElementById('description').value,
@@ -511,7 +558,7 @@
                 font: document.getElementById('font').value,
                 text_size: document.getElementById('text_size').value,
                 spacing: document.getElementById('spacing').value,
-                color: colorParam,
+                color: colorParam, // 0xRRGGBB
                 text_align: document.getElementById('text_align').value,
                 
                 h1_size: document.getElementById('h1_size').value,
@@ -537,7 +584,6 @@
             }
             const dataString = dataArray.join('&');
 
-            // Отправляем данные и закрываем Web App
             WebApp.sendData(dataString);
             
             // Закрываем Web App через небольшую задержку
@@ -546,24 +592,29 @@
             }, 500);
         }
         
-        // Заполнение полей начальными значениями из URL
+        // ** Заполнение полей начальными значениями из URL **
         if (WebApp.initDataUnsafe.query_id) {
             const urlParams = new URLSearchParams(window.location.search);
             
             for (const [key, value] of urlParams.entries()) {
                 const element = document.getElementById(key);
                 if (element) {
+                    const decodedValue = decodeURIComponent(value);
+
                     if (element.type === 'checkbox') {
-                        element.checked = value === 'true';
+                        element.checked = decodedValue === 'true';
                     } 
-                    else if (key === 'color' && element.id !== 'text_color_hex' && element.id !== 'text_color_picker') {
+                    else if (key === 'color') {
+                        // КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ ДЛЯ ЦВЕТА
                         // Обработка цвета: 0xRRGGBB -> #RRGGBB
-                        const hexColor = '#' + value.substring(2);
-                        hexInput.value = hexColor;
-                        colorPicker.value = hexColor;
+                        if (decodedValue.startsWith('0x') && decodedValue.length >= 8) {
+                            const hexColor = '#' + decodedValue.substring(2);
+                            hexInput.value = hexColor.toUpperCase();
+                            colorPicker.value = hexColor.toUpperCase();
+                        }
                     }
                     else if (element.tagName === 'SELECT' || element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                        element.value = decodeURIComponent(value); 
+                        element.value = decodedValue; 
                     }
                 }
             }
